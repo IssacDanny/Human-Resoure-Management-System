@@ -14,7 +14,7 @@ services:
 
   # Database GUI (Optional, but useful for inspection)
   pgadmin:
-    image: dpage/pgadmin4
+    image: dpage/pgadmin4:9.11
     container_name: hrms_pgadmin
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@hrms.internal

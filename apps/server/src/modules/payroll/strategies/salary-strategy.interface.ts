@@ -1,5 +1,5 @@
 /**
- * ISalaryStrategy (The Evolution Point)
+ * ISalaryStrategy
  * 
  * PURPOSE:
  * - Defines the contract for calculating taxes and deductions.

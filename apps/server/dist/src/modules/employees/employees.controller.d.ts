@@ -1,0 +1,97 @@
+import { EmployeesService } from './employees.service';
+import { CreateEmployeeDto } from './dto/create-employee.dto';
+import { UpdateEmployeeDto } from './dto/update-employee.dto';
+export declare class EmployeesController {
+    private readonly employeesService;
+    constructor(employeesService: EmployeesService);
+    create(createEmployeeDto: CreateEmployeeDto): Promise<{
+        fullName: string;
+        workEmail: string;
+        jobTitle: string;
+        basicSalary: import("@prisma/client/runtime/library").Decimal;
+        joinDate: Date;
+        role: import("@prisma/client").$Enums.Role;
+        id: string;
+        passwordHash: string;
+        status: import("@prisma/client").$Enums.EmployeeStatus;
+        department: string;
+        phone: string | null;
+        dob: Date | null;
+        gender: string | null;
+        address: string | null;
+        emergencyName: string | null;
+        emergencyPhone: string | null;
+        managerId: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+    }>;
+    findAll(query: any): Promise<{
+        data: {
+            fullName: string;
+            workEmail: string;
+            jobTitle: string;
+            basicSalary: import("@prisma/client/runtime/library").Decimal;
+            joinDate: Date;
+            role: import("@prisma/client").$Enums.Role;
+            id: string;
+            passwordHash: string;
+            status: import("@prisma/client").$Enums.EmployeeStatus;
+            department: string;
+            phone: string | null;
+            dob: Date | null;
+            gender: string | null;
+            address: string | null;
+            emergencyName: string | null;
+            emergencyPhone: string | null;
+            managerId: string | null;
+            createdAt: Date;
+            updatedAt: Date;
+        }[];
+        pagination: {
+            hasNextPage: boolean;
+            nextCursor: null;
+        };
+    }>;
+    findOne(id: string): Promise<{
+        fullName: string;
+        workEmail: string;
+        jobTitle: string;
+        basicSalary: import("@prisma/client/runtime/library").Decimal;
+        joinDate: Date;
+        role: import("@prisma/client").$Enums.Role;
+        id: string;
+        passwordHash: string;
+        status: import("@prisma/client").$Enums.EmployeeStatus;
+        department: string;
+        phone: string | null;
+        dob: Date | null;
+        gender: string | null;
+        address: string | null;
+        emergencyName: string | null;
+        emergencyPhone: string | null;
+        managerId: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+    }>;
+    update(id: string, updateEmployeeDto: UpdateEmployeeDto): Promise<{
+        fullName: string;
+        workEmail: string;
+        jobTitle: string;
+        basicSalary: import("@prisma/client/runtime/library").Decimal;
+        joinDate: Date;
+        role: import("@prisma/client").$Enums.Role;
+        id: string;
+        passwordHash: string;
+        status: import("@prisma/client").$Enums.EmployeeStatus;
+        department: string;
+        phone: string | null;
+        dob: Date | null;
+        gender: string | null;
+        address: string | null;
+        emergencyName: string | null;
+        emergencyPhone: string | null;
+        managerId: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+    }>;
+}

@@ -1,39 +1,44 @@
 import { Injectable } from '@nestjs/common';
-// import { PrismaService } from '../../prisma.service'; // Assuming you have this
+import { PrismaService } from '../../prisma.service';
+import { Prisma, Employee } from '@prisma/client';
 
-/**
- * EmployeesRepository (The Archivist)
- * 
- * RESPONSIBILITY:
- * - Abstract the database layer (Prisma).
- * - Perform raw CRUD operations.
- * - No complex business logic here.
- */
 @Injectable()
 export class EmployeesRepository {
-  // constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-  /**
-   * Persist a new employee record to the database.
-   */
-  async create(data: any) {
-    // TODO: return this.prisma.employee.create({ data });
-    throw new Error('Method not implemented.');
+  async create(data: Prisma.EmployeeCreateInput): Promise<Employee> {
+    return this.prisma.employee.create({ data });
   }
 
-  /**
-   * Find a record by primary key.
-   */
-  async findById(id: string) {
-    // TODO: return this.prisma.employee.findUnique({ where: { id } });
-    throw new Error('Method not implemented.');
+  async findAll(params: {
+    skip?: number;
+    take?: number;
+    cursor?: Prisma.EmployeeWhereUniqueInput;
+    where?: Prisma.EmployeeWhereInput;
+    orderBy?: Prisma.EmployeeOrderByWithRelationInput;
+  }): Promise<Employee[]> {
+    const { skip, take, cursor, where, orderBy } = params;
+    return this.prisma.employee.findMany({
+      skip,
+      take,
+      cursor,
+      where,
+      orderBy,
+    });
   }
 
-  /**
-   * Find a record by email (for uniqueness checks).
-   */
-  async findByEmail(email: string) {
-    // TODO: Implement query
-    throw new Error('Method not implemented.');
+  async findOne(where: Prisma.EmployeeWhereUniqueInput): Promise<Employee | null> {
+    return this.prisma.employee.findUnique({ where });
+  }
+
+  async update(params: {
+    where: Prisma.EmployeeWhereUniqueInput;
+    data: Prisma.EmployeeUpdateInput;
+  }): Promise<Employee> {
+    const { where, data } = params;
+    return this.prisma.employee.update({
+      data,
+      where,
+    });
   }
 }

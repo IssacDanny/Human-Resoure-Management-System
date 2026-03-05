@@ -1,7 +1,21 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { CreateEmployeeDto } from './create-employee.dto';
+import { IsOptional, IsString, IsPhoneNumber } from 'class-validator';
 
 export class UpdateEmployeeDto extends PartialType(CreateEmployeeDto) {
-  // TODO: Add specific fields that are allowed to be updated (e.g. phone, address)
-  // Refer to the API Spec for exactly which fields are editable.
+  @IsOptional()
+  @IsString()
+  address?: string;
+
+  @IsOptional()
+  @IsPhoneNumber('VN') // Validates phone format (vietnam)
+  phone?: string;
+
+  @IsOptional()
+  @IsString()
+  emergencyName?: string;
+
+  @IsOptional()
+  @IsPhoneNumber('VN')
+  emergencyPhone?: string;
 }
