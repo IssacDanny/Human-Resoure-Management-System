@@ -42,15 +42,21 @@ Before commencing, ensure your station is equipped with the following:
     ```bash
     docker-compose up -d
     ```
+    
+4.  **Create the environment file:**
+    Navigate to the server and create the .env file with the following value.
+    ```bash
+    DATABASE_URL = postgres://admin:secretpassword@localhost:5432/hrms_local
+    ```
 
-4.  **Initialize the Archivist (Prisma):**
+5.  **Initialize the Archivist (Prisma):**
     Navigate to the server and push the schema to the database.
     ```bash
     cd apps/server
     npx prisma generate
     npx prisma db push
     ```
-5. **Populate Dummy Data:**
+6. **Populate Dummy Data:**
     To instantly fill your local database with realistic users, attendance records, and leave requests:
     ```bash
     # From the apps/server of the monorepo
