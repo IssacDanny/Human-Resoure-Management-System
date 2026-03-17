@@ -5,7 +5,7 @@ import { LeaveRepository } from './leave.repository';
 import { PrismaService } from '../../prisma.service';
 
 @Module({
-  controllers:[LeaveController],
+  controllers: [LeaveController],
   providers: [LeaveService, LeaveRepository, PrismaService],
 })
 export class LeaveModule {}

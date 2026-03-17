@@ -15,7 +15,7 @@ export class AttendanceController {
 
   @Get()
   async listAttendance(@Query() query: any) {
-    // In a fully polished system, we would use a custom Interceptor 
+    // In a fully polished system, we would use a custom Interceptor
     // to wrap this in the { data:[], pagination: {} } format.
     // For the skeleton, we return the raw array.
     const data = await this.attendanceService.getRecords(query);
@@ -23,8 +23,8 @@ export class AttendanceController {
       data,
       pagination: {
         hasNextPage: false, // Mocked for MVP
-        nextCursor: null
-      }
+        nextCursor: null,
+      },
     };
   }
 }

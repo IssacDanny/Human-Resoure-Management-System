@@ -16,13 +16,12 @@ import { PayrollModule } from './modules/payroll/payroll.module';
     AttendanceModule,
     LeaveModule,
     PayrollModule,
-    
   ],
   controllers: [],
   providers: [
     // The Database Connection
     PrismaService,
-    
+
     // The Global Error Handler
     {
       provide: APP_FILTER,

@@ -8,12 +8,12 @@ export declare class AttendanceController {
         status: import("@prisma/client").$Enums.AttendanceStatus;
         createdAt: Date;
         updatedAt: Date;
-        employeeId: string;
         date: Date;
         checkInTime: Date | null;
         checkOutTime: Date | null;
         workedDays: import("@prisma/client/runtime/library").Decimal;
         note: string | null;
+        employeeId: string;
     }>;
     listAttendance(query: any): Promise<{
         data: {
@@ -21,12 +21,12 @@ export declare class AttendanceController {
             status: import("@prisma/client").$Enums.AttendanceStatus;
             createdAt: Date;
             updatedAt: Date;
-            employeeId: string;
             date: Date;
             checkInTime: Date | null;
             checkOutTime: Date | null;
             workedDays: import("@prisma/client/runtime/library").Decimal;
             note: string | null;
+            employeeId: string;
         }[];
         pagination: {
             hasNextPage: boolean;

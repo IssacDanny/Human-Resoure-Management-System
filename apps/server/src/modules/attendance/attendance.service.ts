@@ -13,7 +13,7 @@ export class AttendanceService {
    */
   async recordDailyAttendance(dto: UpsertAttendanceDto) {
     const targetDate = new Date(dto.date);
-    
+
     // Business Logic: Determine numerical value of the day
     let workedDays = 0;
     switch (dto.status) {
@@ -59,19 +59,21 @@ export class AttendanceService {
   async getRecords(query: any) {
     const take = query.limit ? Number(query.limit) : 25;
     const skip = query.offset ? Number(query.offset) : 0;
-    
+
     const whereClause: any = {};
-    
+
     if (query['filter[employeeId]']) {
       whereClause.employeeId = query['filter[employeeId]'];
     }
-    
+
     if (query['filter[month]']) {
       // month format: YYYY-MM
       const [year, month] = query['filter[month]'].split('-');
       const startDate = new Date(Date.UTC(Number(year), Number(month) - 1, 1));
-      const endDate = new Date(Date.UTC(Number(year), Number(month), 0, 23, 59, 59));
-      
+      const endDate = new Date(
+        Date.UTC(Number(year), Number(month), 0, 23, 59, 59),
+      );
+
       whereClause.date = {
         gte: startDate,
         lte: endDate,
@@ -90,20 +92,28 @@ export class AttendanceService {
    * ISP Implementation for the Payroll Module.
    * Sums up the total worked days for a specific employee in a given month.
    */
-  async getMonthlySummary(employeeId: string, monthString: string): Promise<number> {
+  async getMonthlySummary(
+    employeeId: string,
+    monthString: string,
+  ): Promise<number> {
     const [year, month] = monthString.split('-');
     const startDate = new Date(Date.UTC(Number(year), Number(month) - 1, 1));
-    const endDate = new Date(Date.UTC(Number(year), Number(month), 0, 23, 59, 59));
+    const endDate = new Date(
+      Date.UTC(Number(year), Number(month), 0, 23, 59, 59),
+    );
 
     const records = await this.repository.findMany({
       where: {
         employeeId,
         date: { gte: startDate, lte: endDate },
-      }
+      },
     });
 
     // Sum the workedDays (Decimal needs to be converted to Number for math)
-    const totalDays = records.reduce((sum, record) => sum + Number(record.workedDays), 0);
+    const totalDays = records.reduce(
+      (sum, record) => sum + Number(record.workedDays),
+      0,
+    );
     return totalDays;
   }
 }

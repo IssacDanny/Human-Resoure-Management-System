@@ -2,12 +2,12 @@ import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
 
 /**
  * LoginRequestDto
- * 
+ *
  * RESPONSIBILITY:
  * - Validates the payload for POST /auth/login.
  * - Enforces that email is a valid email format.
  * - Enforces that password is not empty.
- * 
+ *
  * MATCHES OPENAPI: components/schemas/LoginRequest
  */
 export class LoginRequestDto {

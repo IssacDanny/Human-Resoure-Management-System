@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Query, UseGuards, Req, Res, BadRequestException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Query,
+  UseGuards,
+  Req,
+  Res,
+  BadRequestException,
+} from '@nestjs/common';
 import { PayrollService } from './payroll.service';
 import { GeneratePayrollDto } from './dto/generate-payroll.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
@@ -20,18 +30,20 @@ export class PayrollController {
   async listPayslips(@Req() req: Request, @Query() query: any) {
     const user = req.user as any;
     const data = await this.payrollService.getPayslips(query, user);
-    
+
     return {
       data,
-      pagination: { hasNextPage: false, nextCursor: null }
+      pagination: { hasNextPage: false, nextCursor: null },
     };
   }
 
   @Get('payroll-reports/export')
-  async exportReport(@Query('month') month: string, @Res() res: Response ) {
+  async exportReport(@Query('month') month: string, @Res() res: Response) {
     // 1. Validate the input
     if (!month || !/^\d{4}-\d{2}$/.test(month)) {
-      throw new BadRequestException('A valid month in YYYY-MM format is required.');
+      throw new BadRequestException(
+        'A valid month in YYYY-MM format is required.',
+      );
     }
 
     // TODO: Add @RolesGuard to ensure only ADMIN_HR can download this report
@@ -41,7 +53,8 @@ export class PayrollController {
 
     // 3. Set the HTTP Headers for a file download
     res.set({
-      'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'Content-Type':
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
       'Content-Disposition': `attachment; filename="Payroll_Report_${month}.xlsx"`,
       'Content-Length': buffer.length,
     });

@@ -27,7 +27,9 @@ export class EmployeesRepository {
     });
   }
 
-  async findOne(where: Prisma.EmployeeWhereUniqueInput): Promise<Employee | null> {
+  async findOne(
+    where: Prisma.EmployeeWhereUniqueInput,
+  ): Promise<Employee | null> {
     return this.prisma.employee.findUnique({ where });
   }
 

@@ -1,9 +1,17 @@
-import { IsEmail, IsEnum, IsISO8601, IsNotEmpty, IsNumber, IsString, Min } from 'class-validator';
+import {
+  IsEmail,
+  IsEnum,
+  IsISO8601,
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+  Min,
+} from 'class-validator';
 
 export enum Role {
-  ADMIN_HR = 'ADMIN_HR',
-  MANAGER = 'MANAGER',
-  EMPLOYEE = 'EMPLOYEE',
+  admin = 'admin',
+  manager = 'manager',
+  employee = 'employee',
 }
 
 export class CreateEmployeeDto {
@@ -17,7 +25,7 @@ export class CreateEmployeeDto {
 
   @IsNotEmpty()
   @IsString()
-  departmentId: string; // For MVP, this is just a string. Later, a relation.
+  department: string; // For MVP, this is just a string. Later, a relation.
 
   @IsNotEmpty()
   @IsString()

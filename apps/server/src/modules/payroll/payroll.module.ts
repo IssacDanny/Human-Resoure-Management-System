@@ -8,16 +8,16 @@ import { EmployeesModule } from '../employees/employees.module';
 import { AttendanceModule } from '../attendance/attendance.module';
 
 @Module({
-  imports:[
-    EmployeesModule,   // Required to fetch employees
-    AttendanceModule,  // Required to fetch worked days
+  imports: [
+    EmployeesModule, // Required to fetch employees
+    AttendanceModule, // Required to fetch worked days
   ],
   controllers: [PayrollController],
-  providers:[
-    PayrollService, 
-    PayrollRepository, 
-    StandardVietnameseStrategy, 
-    PrismaService
+  providers: [
+    PayrollService,
+    PayrollRepository,
+    StandardVietnameseStrategy,
+    PrismaService,
   ],
 })
 export class PayrollModule {}

@@ -1,6 +1,6 @@
 /**
  * ISalaryStrategy
- * 
+ *
  * PURPOSE:
  * - Defines the contract for calculating taxes and deductions.
  * - Allows us to swap tax rules (e.g. Vietnam vs Singapore, or 2025 vs 2026)

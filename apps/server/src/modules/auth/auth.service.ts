@@ -17,14 +17,14 @@ export class AuthService {
   async validateUser(email: string, pass: string): Promise<any> {
     // 1. Find the employee
     const user = await this.employeesService.findByEmail(email);
-    
+
     // 2. Check if user exists and password matches
     if (user && (await bcrypt.compare(pass, user.passwordHash))) {
       // 3. Strip the password from the result
       const { passwordHash, ...result } = user;
       return result;
     }
-    
+
     return null;
   }
 
@@ -33,7 +33,7 @@ export class AuthService {
    */
   async login(user: any) {
     const payload = { email: user.workEmail, sub: user.id, role: user.role };
-    
+
     return {
       accessToken: this.jwtService.sign(payload),
       expiresIn: 3600, // seconds
@@ -44,8 +44,8 @@ export class AuthService {
         email: user.workEmail,
         role: user.role,
         department: user.department,
-        jobTitle: user.jobTitle
-      }
+        jobTitle: user.jobTitle,
+      },
     };
   }
 }

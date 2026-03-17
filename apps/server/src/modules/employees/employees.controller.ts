@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Query, ParseUUIDPipe, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Query,
+  ParseUUIDPipe,
+  UseGuards,
+} from '@nestjs/common';
 import { EmployeesService } from './employees.service';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
@@ -29,8 +39,8 @@ export class EmployeesController {
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
   update(
-    @Param('id', ParseUUIDPipe) id: string, 
-    @Body() updateEmployeeDto: UpdateEmployeeDto
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() updateEmployeeDto: UpdateEmployeeDto,
   ) {
     return this.employeesService.updateProfile(id, updateEmployeeDto);
   }

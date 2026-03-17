@@ -15,14 +15,14 @@ datasource db {
 // ==========================================
 
 enum Role {
-  ADMIN_HR
-  MANAGER
-  EMPLOYEE
+  admin
+  manager
+  employee
 }
 
 enum EmployeeStatus {
-  ACTIVE
-  INACTIVE
+  active
+  inactive
 }
 
 enum LeaveType {
@@ -53,8 +53,8 @@ model Employee {
   fullName      String         @map("full_name")
   workEmail     String         @unique @map("work_email")
   passwordHash  String         @map("password_hash") // Nullable if using SSO, but required for now
-  role          Role           @default(EMPLOYEE)
-  status        EmployeeStatus @default(ACTIVE)
+  role          Role           @default(employee)
+  status        EmployeeStatus @default(active)
   
   // Job Info
   joinDate      DateTime       @map("join_date") @db.Date

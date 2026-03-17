@@ -15,9 +15,9 @@ export class PayrollService {
     private readonly repository: PayrollRepository,
     private readonly employeesService: EmployeesService,
     private readonly attendanceService: AttendanceService,
-    // Injecting the concrete strategy for now. 
+    // Injecting the concrete strategy for now.
     // In a multi-tenant system, this could be resolved dynamically.
-    private readonly defaultStrategy: StandardVietnameseStrategy, 
+    private readonly defaultStrategy: StandardVietnameseStrategy,
   ) {
     this.salaryStrategy = this.defaultStrategy;
   }
@@ -40,10 +40,15 @@ export class PayrollService {
 
     for (const emp of employees) {
       // 2. ISP in action: Get the IPayable representation
-      const payableEntity = await this.employeesService.getPayableEntity(emp.id);
+      const payableEntity = await this.employeesService.getPayableEntity(
+        emp.id,
+      );
 
       // 3. Get actual worked days from the Timekeeper
-      const actualWorkedDays = await this.attendanceService.getMonthlySummary(emp.id, dto.month);
+      const actualWorkedDays = await this.attendanceService.getMonthlySummary(
+        emp.id,
+        dto.month,
+      );
 
       // 4. Calculate Gross Salary: (Basic / Standard) * Actual
       const dailyRate = payableEntity.basicSalary / dto.standardWorkingDays;
@@ -52,9 +57,9 @@ export class PayrollService {
       // 5. Apply Strategy (Taxes & Deductions)
       const deductions = this.salaryStrategy.calculateDeductions(grossSalary);
       const tax = this.salaryStrategy.calculateTax(grossSalary);
-      
+
       // Allowances and bonuses would be fetched here in a full implementation
-      const allowance = 0; 
+      const allowance = 0;
       const bonus = 0;
 
       const netSalary = grossSalary + allowance + bonus - deductions - tax;
@@ -117,13 +122,13 @@ export class PayrollService {
 
   /**
    * Generates an Excel workbook for the specified month's payroll.
-   * 
+   *
    * @param monthString - Format YYYY-MM
    * @returns A Buffer containing the .xlsx file data
    */
   async generateExcelReport(monthString: string): Promise<Buffer> {
     const [year, month] = monthString.split('-');
-    
+
     // 1. Fetch the data (including employee details)
     const payrolls = await this.repository.findMany({
       where: {
@@ -136,11 +141,11 @@ export class PayrollService {
     const workbook = new ExcelJS.Workbook();
     workbook.creator = 'HRMS System';
     workbook.created = new Date();
-    
+
     const worksheet = workbook.addWorksheet(`Payroll ${monthString}`);
 
     // 3. Define the Columns
-    worksheet.columns =[
+    worksheet.columns = [
       { header: 'Employee ID', key: 'empId', width: 38 },
       { header: 'Full Name', key: 'name', width: 30 },
       { header: 'Standard Days', key: 'standardDays', width: 15 },
@@ -171,13 +176,12 @@ export class PayrollService {
 
     // Format currency columns
     const currencyFormat = '#,##0';
-    ['E', 'F', 'G', 'H'].forEach(col => {
+    ['E', 'F', 'G', 'H'].forEach((col) => {
       worksheet.getColumn(col).numFmt = currencyFormat;
     });
 
     // 5. Write to Buffer and return
     const buffer = await workbook.xlsx.writeBuffer();
-    return (buffer as unknown) as Buffer;
+    return buffer as unknown as Buffer;
   }
 }
-

@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Query, UseGuards, Req, ParseUUIDPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Query,
+  UseGuards,
+  Req,
+  ParseUUIDPipe,
+} from '@nestjs/common';
 import { LeaveService } from './leave.service';
 import { CreateLeaveRequestDto } from './dto/create-leave.dto';
 import { UpdateLeaveStatusDto } from './dto/update-leave-status.dto';
@@ -11,7 +22,10 @@ export class LeaveController {
   constructor(private readonly leaveService: LeaveService) {}
 
   @Post()
-  async submitRequest(@Req() req: Request, @Body() createDto: CreateLeaveRequestDto) {
+  async submitRequest(
+    @Req() req: Request,
+    @Body() createDto: CreateLeaveRequestDto,
+  ) {
     const user = req.user as any; // Extracted from JWT
     return this.leaveService.submitRequest(user.id, createDto);
   }
@@ -20,10 +34,10 @@ export class LeaveController {
   async listRequests(@Req() req: Request, @Query() query: any) {
     const user = req.user as any;
     const data = await this.leaveService.getRequests(query, user);
-    
+
     return {
       data,
-      pagination: { hasNextPage: false, nextCursor: null } // Mocked pagination wrapper
+      pagination: { hasNextPage: false, nextCursor: null }, // Mocked pagination wrapper
     };
   }
 
@@ -36,10 +50,10 @@ export class LeaveController {
   async updateStatus(
     @Req() req: Request,
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() updateDto: UpdateLeaveStatusDto
+    @Body() updateDto: UpdateLeaveStatusDto,
   ) {
     const user = req.user as any;
-    // Only Managers or Admins should be able to do this. 
+    // Only Managers or Admins should be able to do this.
     // A custom @RolesGuard would be ideal here.
     return this.leaveService.updateStatus(id, user.id, updateDto);
   }

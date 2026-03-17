@@ -8,24 +8,24 @@ export declare class AttendanceService {
         status: import("@prisma/client").$Enums.AttendanceStatus;
         createdAt: Date;
         updatedAt: Date;
-        employeeId: string;
         date: Date;
         checkInTime: Date | null;
         checkOutTime: Date | null;
         workedDays: import("@prisma/client/runtime/library").Decimal;
         note: string | null;
+        employeeId: string;
     }>;
     getRecords(query: any): Promise<{
         id: string;
         status: import("@prisma/client").$Enums.AttendanceStatus;
         createdAt: Date;
         updatedAt: Date;
-        employeeId: string;
         date: Date;
         checkInTime: Date | null;
         checkOutTime: Date | null;
         workedDays: import("@prisma/client/runtime/library").Decimal;
         note: string | null;
+        employeeId: string;
     }[]>;
     getMonthlySummary(employeeId: string, monthString: string): Promise<number>;
 }

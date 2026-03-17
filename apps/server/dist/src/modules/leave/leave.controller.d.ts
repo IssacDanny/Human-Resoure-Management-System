@@ -16,8 +16,8 @@ export declare class LeaveController {
         endDate: Date;
         reason: string;
         rejectionReason: string | null;
-        decidedById: string | null;
         decidedAt: Date | null;
+        decidedById: string | null;
     }>;
     listRequests(req: Request, query: any): Promise<{
         data: {
@@ -31,8 +31,8 @@ export declare class LeaveController {
             endDate: Date;
             reason: string;
             rejectionReason: string | null;
-            decidedById: string | null;
             decidedAt: Date | null;
+            decidedById: string | null;
         }[];
         pagination: {
             hasNextPage: boolean;
@@ -50,8 +50,8 @@ export declare class LeaveController {
         endDate: Date;
         reason: string;
         rejectionReason: string | null;
-        decidedById: string | null;
         decidedAt: Date | null;
+        decidedById: string | null;
     }>;
     updateStatus(req: Request, id: string, updateDto: UpdateLeaveStatusDto): Promise<{
         id: string;
@@ -64,7 +64,7 @@ export declare class LeaveController {
         endDate: Date;
         reason: string;
         rejectionReason: string | null;
-        decidedById: string | null;
         decidedAt: Date | null;
+        decidedById: string | null;
     }>;
 }

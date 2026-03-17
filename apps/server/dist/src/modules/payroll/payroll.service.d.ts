@@ -19,8 +19,8 @@ export declare class PayrollService {
     getPayslips(query: any, currentUser: any): Promise<{
         id: string;
         employeeId: string;
-        month: number;
         year: number;
+        month: number;
         standardWorkingDays: number;
         actualWorkedDays: import("@prisma/client/runtime/library").Decimal;
         snapshotBasicSalary: import("@prisma/client/runtime/library").Decimal;

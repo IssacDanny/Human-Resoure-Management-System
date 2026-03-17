@@ -15,8 +15,8 @@ export declare class LeaveService {
         endDate: Date;
         reason: string;
         rejectionReason: string | null;
-        decidedById: string | null;
         decidedAt: Date | null;
+        decidedById: string | null;
     }>;
     getRequests(query: any, currentUser: any): Promise<{
         id: string;
@@ -29,8 +29,8 @@ export declare class LeaveService {
         endDate: Date;
         reason: string;
         rejectionReason: string | null;
-        decidedById: string | null;
         decidedAt: Date | null;
+        decidedById: string | null;
     }[]>;
     getRequestById(id: string): Promise<{
         id: string;
@@ -43,8 +43,8 @@ export declare class LeaveService {
         endDate: Date;
         reason: string;
         rejectionReason: string | null;
-        decidedById: string | null;
         decidedAt: Date | null;
+        decidedById: string | null;
     }>;
     updateStatus(requestId: string, managerId: string, dto: UpdateLeaveStatusDto): Promise<{
         id: string;
@@ -57,7 +57,7 @@ export declare class LeaveService {
         endDate: Date;
         reason: string;
         rejectionReason: string | null;
-        decidedById: string | null;
         decidedAt: Date | null;
+        decidedById: string | null;
     }>;
 }

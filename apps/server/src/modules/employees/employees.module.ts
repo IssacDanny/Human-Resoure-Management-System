@@ -7,9 +7,9 @@ import { PrismaService } from '../../prisma.service';
 @Module({
   controllers: [EmployeesController],
   providers: [
-    EmployeesService, 
-    EmployeesRepository, 
-    PrismaService // Inject Prisma so the Repository can use it
+    EmployeesService,
+    EmployeesRepository,
+    PrismaService, // Inject Prisma so the Repository can use it
   ],
   exports: [EmployeesService], // Export Service if other modules (like Payroll) need it
 })

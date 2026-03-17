@@ -7,7 +7,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { v4 as uuidv4 } from 'uuid';
+import * as crypto from 'crypto';
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
@@ -17,7 +17,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
-    const traceId = uuidv4();
+    const traceId = crypto.randomUUID();
 
     // Determine the HTTP Status
     const status =
@@ -32,12 +32,12 @@ export class GlobalExceptionFilter implements ExceptionFilter {
 
     if (exception instanceof HttpException) {
       const res = exception.getResponse();
-      
+
       // Handle standard NestJS validation errors (class-validator)
       if (typeof res === 'object' && res !== null) {
         const errorObj = res as any;
         message = errorObj.message || exception.message;
-        
+
         // Map HTTP Status to your API Style Guide Codes
         code = this.mapStatusToCode(status);
 
@@ -72,13 +72,20 @@ export class GlobalExceptionFilter implements ExceptionFilter {
 
   private mapStatusToCode(status: number): string {
     switch (status) {
-      case 400: return 'validation_error';
-      case 401: return 'unauthorized';
-      case 403: return 'forbidden';
-      case 404: return 'resource_not_found';
-      case 409: return 'conflict';
-      case 422: return 'unprocessable_entity';
-      default: return 'internal_server_error';
+      case 400:
+        return 'validation_error';
+      case 401:
+        return 'unauthorized';
+      case 403:
+        return 'forbidden';
+      case 404:
+        return 'resource_not_found';
+      case 409:
+        return 'conflict';
+      case 422:
+        return 'unprocessable_entity';
+      default:
+        return 'internal_server_error';
     }
   }
 }
