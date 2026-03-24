@@ -7,12 +7,7 @@ import {
   IsString,
   Min,
 } from 'class-validator';
-
-export enum Role {
-  admin = 'admin',
-  manager = 'manager',
-  employee = 'employee',
-}
+import { Role } from '@prisma/client';
 
 export class CreateEmployeeDto {
   @IsNotEmpty()
@@ -25,7 +20,7 @@ export class CreateEmployeeDto {
 
   @IsNotEmpty()
   @IsString()
-  department: string; // For MVP, this is just a string. Later, a relation.
+  department: string;
 
   @IsNotEmpty()
   @IsString()

@@ -3,6 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
 datasource db {
@@ -15,9 +16,9 @@ datasource db {
 // ==========================================
 
 enum Role {
-  admin
-  manager
-  employee
+  ADMIN_HR
+  MANAGER
+  EMPLOYEE
 }
 
 enum EmployeeStatus {
@@ -53,7 +54,7 @@ model Employee {
   fullName      String         @map("full_name")
   workEmail     String         @unique @map("work_email")
   passwordHash  String         @map("password_hash") // Nullable if using SSO, but required for now
-  role          Role           @default(employee)
+  role          Role           @default(EMPLOYEE)
   status        EmployeeStatus @default(active)
   
   // Job Info

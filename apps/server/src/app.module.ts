@@ -7,10 +7,14 @@ import { AuthModule } from './modules/auth/auth.module';
 import { AttendanceModule } from './modules/attendance/attendance.module';
 import { LeaveModule } from './modules/leave/leave.module';
 import { PayrollModule } from './modules/payroll/payroll.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
     // Register the Domain Modules here
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     EmployeesModule,
     AuthModule,
     AttendanceModule,

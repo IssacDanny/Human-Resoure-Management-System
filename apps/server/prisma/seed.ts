@@ -25,7 +25,7 @@ async function main() {
       fullName: 'Sterling Archer',
       workEmail: 'admin@hrms.internal',
       passwordHash: commonPassword,
-      role: Role.admin,
+      role: Role.ADMIN_HR,
       status: EmployeeStatus.active,
       department: 'Operations',
       jobTitle: 'Quartermaster',

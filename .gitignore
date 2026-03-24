@@ -1,7 +1,15 @@
+# dependencies
+**/node_modules/
+
 # compiled output
-dist/
-node_modules/
-build/
+**/dist/
+**/build/
+**/coverage/
+
+# prisma generated
+**/.prisma/
+generated/prisma/
+**/generated/prisma/
 
 # Logs
 logs
@@ -16,11 +24,10 @@ lerna-debug.log*
 .DS_Store
 
 # Tests
-/coverage
-/.nyc_output
+.nyc_output/
 
 # IDEs and editors
-/.idea
+.idea/
 .project
 .classpath
 .c9/
@@ -43,8 +50,8 @@ lerna-debug.log*
 .env.local
 
 # temp directory
-.temp
-.tmp
+.temp/
+.tmp/
 
 # Runtime data
 pids
@@ -52,7 +59,5 @@ pids
 *.seed
 *.pid.lock
 
-# Diagnostic reports (https://nodejs.org/api/report.html)
+# Diagnostic reports
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
-
-/generated/prisma
