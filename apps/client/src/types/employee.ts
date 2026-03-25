@@ -25,7 +25,7 @@ export interface CreateEmployeePayload {
 
 // Employee response shape returned by the server (raw Prisma model)
 export interface Employee {
-  id: string;
+  id: number;
   fullName: string;
   workEmail: string;
   personalEmail?: string | null;
