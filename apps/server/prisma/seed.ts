@@ -27,7 +27,9 @@ async function main() {
       passwordHash: commonPassword,
       role: Role.ADMIN_HR,
       status: EmployeeStatus.ACTIVE,
-      department: 'Operations',
+      department: {
+          create: { name: "Operations" }
+        },
       jobTitle: 'Quartermaster',
       joinDate: new Date('2024-01-01'),
       basicSalary: 50000000,
@@ -47,7 +49,9 @@ async function main() {
         passwordHash: commonPassword,
         role: Role.MANAGER,
         status: EmployeeStatus.ACTIVE,
-        department: dept,
+        department: {
+          create: { name: dept }
+        },
         jobTitle: `${dept} Manager`,
         joinDate: faker.date.past({ years: 2 }),
         basicSalary: 35000000,
@@ -63,11 +67,19 @@ async function main() {
           passwordHash: commonPassword,
           role: Role.EMPLOYEE,
           status: EmployeeStatus.ACTIVE,
-          department: dept,
+          department: {
+            connectOrCreate: {
+              where: { name: dept },
+              create: { name: dept },
+            }
+          },
           jobTitle: `${dept} Specialist`,
           joinDate: faker.date.past({ years: 1 }),
           basicSalary: faker.number.int({ min: 10000000, max: 25000000 }),
-          managerId: manager.id, // Hierarchy
+
+          manager: {
+            connect: { id: manager.id }
+          },
         },
       });
 

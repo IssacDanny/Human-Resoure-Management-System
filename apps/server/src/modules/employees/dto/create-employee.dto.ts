@@ -20,7 +20,7 @@ export class CreateEmployeeDto {
 
   @IsNotEmpty()
   @IsString()
-  department: string;
+  departmentId: string;
 
   @IsNotEmpty()
   @IsString()

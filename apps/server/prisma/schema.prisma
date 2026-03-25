@@ -54,13 +54,14 @@ model Employee {
   fullName      String         @map("full_name")
   workEmail     String         @unique @map("work_email")
   passwordHash  String         @map("password_hash") // Nullable if using SSO, but required for now
-  role          Role           @default(EMPLOYEE)
-  status        EmployeeStatus @default(ACTIVE)
+  role          Role           @default(EMPLOYEE)  
+  status        EmployeeStatus @default(ACTIVE) 
   
   // Job Info
   joinDate      DateTime       @map("join_date") @db.Date
   basicSalary   Decimal        @map("basic_salary") @db.Decimal(20, 2)
-  department    String         // Keeping as String for MVP, could be a separate table later
+  departmentId  String
+  department    Department     @relation(fields: [departmentId], references: [id])
   jobTitle      String         @map("job_title")
   
   // Personal Info
@@ -186,4 +187,16 @@ model AuditLog {
   target           Employee? @relation("Target", fields: [targetEmployeeId], references: [id])
 
   @@map("audit_logs")
+}
+
+model Department {
+  id         String     @id @default(uuid())
+  name       String     @unique
+  isActive   Int        @default(1)
+  createdAt  DateTime   @default(now()) @map("created_at")
+  updatedAt  DateTime   @updatedAt @map("updated_at")
+
+  employees  Employee[] // relation back to employees
+
+  @@map("departments")
 }

@@ -32,13 +32,13 @@ export class EmployeesService {
     const passwordHash = await bcrypt.hash('Welcome123!', salt);
 
     // 3. Save to DB
-    const { department, ...rest } = dto;
+    const { departmentId, ...rest } = dto;
 
     // Note: We map department directly now
     // Later this should be a relation connect
     return this.repository.create({
       ...rest,
-      department,
+      department: { connect: { id: dto.departmentId } },
       passwordHash,
       joinDate: new Date(dto.joinDate), // Convert ISO string to Date object
     });
