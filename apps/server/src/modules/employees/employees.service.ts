@@ -52,7 +52,7 @@ export class EmployeesService {
     const employees = await this.repository.findAll({
       take,
       skip,
-      where: { status: 'active' }, // Default filter
+      where: { status: 'ACTIVE' }, // Default filter
     });
 
     // FIX: Wrap the result to match the API Contract (EmployeeConnection)
