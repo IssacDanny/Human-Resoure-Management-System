@@ -50,7 +50,7 @@ enum AttendanceStatus {
 // ==========================================
 
 model Employee {
-  id            String         @id @default(uuid()) // Matches API "format: uuid"
+  id            Int            @id @default(autoincrement())
   fullName      String         @map("full_name")
   workEmail     String         @unique @map("work_email")
   passwordHash  String         @map("password_hash") // Nullable if using SSO, but required for now
@@ -60,7 +60,7 @@ model Employee {
   // Job Info
   joinDate      DateTime       @map("join_date") @db.Date
   basicSalary   Decimal        @map("basic_salary") @db.Decimal(20, 2)
-  departmentId  String
+  departmentId  Int
   department    Department     @relation(fields: [departmentId], references: [id])
   jobTitle      String         @map("job_title")
   
@@ -73,7 +73,7 @@ model Employee {
   emergencyPhone String?       @map("emergency_contact_phone")
 
   // Hierarchy (Self-Relation)
-  managerId     String?        @map("manager_id")
+  managerId     Int?        @map("manager_id")
   manager       Employee?      @relation("ManagerSubordinates", fields: [managerId], references: [id])
   subordinates  Employee[]     @relation("ManagerSubordinates")
 
@@ -94,8 +94,8 @@ model Employee {
 }
 
 model Attendance {
-  id          String   @id @default(uuid())
-  employeeId  String   @map("employee_id")
+  id          Int      @id @default(autoincrement())
+  employeeId  Int   @map("employee_id")
   date        DateTime @db.Date
   
   // We use an Enum here for consistency with the API
@@ -118,8 +118,8 @@ model Attendance {
 }
 
 model LeaveRequest {
-  id             String      @id @default(uuid())
-  employeeId     String      @map("employee_id")
+  id             Int         @id @default(autoincrement())
+  employeeId     Int      @map("employee_id")
   leaveType      LeaveType   @map("leave_type")
   
   startDate      DateTime    @map("start_date") @db.Date
@@ -130,7 +130,7 @@ model LeaveRequest {
   rejectionReason String?    @map("rejection_note")
   
   // Approval Workflow
-  decidedById    String?     @map("decided_by")
+  decidedById    Int?     @map("decided_by")
   decidedAt      DateTime?   @map("decided_at")
 
   // Relations
@@ -144,8 +144,8 @@ model LeaveRequest {
 }
 
 model Payroll {
-  id                  String   @id @default(uuid())
-  employeeId          String   @map("employee_id")
+  id                  Int      @id @default(autoincrement())
+  employeeId          Int   @map("employee_id")
   
   // Time Period
   month               Int      // 1-12
@@ -172,10 +172,10 @@ model Payroll {
 }
 
 model AuditLog {
-  id               String   @id @default(uuid())
+  id               Int      @id @default(autoincrement())
   
-  actorId          String   @map("actor_id")
-  targetEmployeeId String?  @map("target_employee_id")
+  actorId          Int   @map("actor_id")
+  targetEmployeeId Int?  @map("target_employee_id")
   
   actionType       String   @map("action_type") // e.g. "CREATE_EMPLOYEE", "APPROVE_LEAVE"
   timestamp        DateTime @default(now())
@@ -190,9 +190,9 @@ model AuditLog {
 }
 
 model Department {
-  id         String     @id @default(uuid())
+  id         Int        @id @default(autoincrement())
   name       String     @unique
-  isActive   Int        @default(1)
+  isActive   Boolean        @default(true)
   createdAt  DateTime   @default(now()) @map("created_at")
   updatedAt  DateTime   @updatedAt @map("updated_at")
 

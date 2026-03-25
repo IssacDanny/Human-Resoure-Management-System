@@ -38,7 +38,7 @@ export class EmployeesService {
     // Later this should be a relation connect
     return this.repository.create({
       ...rest,
-      department: { connect: { id: dto.departmentId } },
+      department: { connect: { id: departmentId } },
       passwordHash,
       joinDate: new Date(dto.joinDate), // Convert ISO string to Date object
     });
@@ -65,7 +65,7 @@ export class EmployeesService {
     };
   }
 
-  async findOne(id: string) {
+  async findOne(id: number) {
     const employee = await this.repository.findOne({ id });
     if (!employee)
       throw new NotFoundException(`Employee with ID ${id} not found`);
@@ -80,7 +80,7 @@ export class EmployeesService {
     return this.repository.findOne({ workEmail: email });
   }
 
-  async updateProfile(id: string, dto: UpdateEmployeeDto) {
+  async updateProfile(id: number, dto: UpdateEmployeeDto) {
     return this.repository.update({
       where: { id },
       data: dto,
@@ -91,7 +91,7 @@ export class EmployeesService {
    * ISP Implementation:
    * Returns only the data needed for Payroll.
    */
-  async getPayableEntity(id: string): Promise<IPayable> {
+  async getPayableEntity(id: number): Promise<IPayable> {
     const employee = await this.findOne(id);
 
     return {

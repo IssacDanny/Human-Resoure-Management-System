@@ -6,7 +6,7 @@ import {
   Patch,
   Param,
   Query,
-  ParseUUIDPipe,
+  ParseIntPipe,
   UseGuards,
 } from '@nestjs/common';
 import { EmployeesService } from './employees.service';
@@ -32,14 +32,14 @@ export class EmployeesController {
 
   @Get(':id')
   @UseGuards(JwtAuthGuard)
-  findOne(@Param('id', ParseUUIDPipe) id: string) {
+  findOne(@Param('id', ParseIntPipe) id: number) {
     return this.employeesService.findOne(id);
   }
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
   update(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateEmployeeDto: UpdateEmployeeDto,
   ) {
     return this.employeesService.updateProfile(id, updateEmployeeDto);

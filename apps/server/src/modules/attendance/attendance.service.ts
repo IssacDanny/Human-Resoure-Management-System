@@ -93,7 +93,7 @@ export class AttendanceService {
    * Sums up the total worked days for a specific employee in a given month.
    */
   async getMonthlySummary(
-    employeeId: string,
+    employeeId: number,
     monthString: string,
   ): Promise<number> {
     const [year, month] = monthString.split('-');

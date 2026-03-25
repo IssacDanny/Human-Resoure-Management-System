@@ -8,7 +8,7 @@ import {
   Query,
   UseGuards,
   Req,
-  ParseUUIDPipe,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { LeaveService } from './leave.service';
 import { CreateLeaveRequestDto } from './dto/create-leave.dto';
@@ -42,14 +42,14 @@ export class LeaveController {
   }
 
   @Get(':id')
-  async getRequest(@Param('id', ParseUUIDPipe) id: string) {
+  async getRequest(@Param('id', ParseIntPipe) id: number) {
     return this.leaveService.getRequestById(id);
   }
 
   @Patch(':id')
   async updateStatus(
     @Req() req: Request,
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateDto: UpdateLeaveStatusDto,
   ) {
     const user = req.user as any;

@@ -19,8 +19,8 @@ export class CreateEmployeeDto {
   workEmail: string;
 
   @IsNotEmpty()
-  @IsString()
-  departmentId: string;
+  @IsNumber()
+  departmentId: number;
 
   @IsNotEmpty()
   @IsString()

@@ -2,7 +2,7 @@ export interface IPayable {
   /**
    * The unique identifier of the entity (Employee).
    */
-  id: string;
+  id: number;
 
   /**
    * The base salary amount before deductions or taxes.

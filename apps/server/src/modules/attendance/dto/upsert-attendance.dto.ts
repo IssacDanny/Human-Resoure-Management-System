@@ -11,7 +11,7 @@ import { AttendanceStatus } from '@prisma/client';
 export class UpsertAttendanceDto {
   @IsNotEmpty()
   @IsUUID()
-  employeeId: string;
+  employeeId: number;
 
   @IsNotEmpty()
   @IsDateString()

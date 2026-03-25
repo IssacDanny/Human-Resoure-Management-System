@@ -20,7 +20,7 @@ export class LeaveService {
    * 1. Validate that startDate <= endDate.
    * 2. Create the record with default status PENDING.
    */
-  async submitRequest(employeeId: string, dto: CreateLeaveRequestDto) {
+  async submitRequest(employeeId: number, dto: CreateLeaveRequestDto) {
     const start = new Date(dto.startDate);
     const end = new Date(dto.endDate);
 
@@ -66,7 +66,7 @@ export class LeaveService {
     });
   }
 
-  async getRequestById(id: string) {
+  async getRequestById(id: number) {
     const request = await this.repository.findById(id);
     if (!request) throw new NotFoundException('Leave request not found.');
     return request;
@@ -81,8 +81,8 @@ export class LeaveService {
    * 2. Update status, decidedBy, and decidedAt.
    */
   async updateStatus(
-    requestId: string,
-    managerId: string,
+    requestId: number,
+    managerId: number,
     dto: UpdateLeaveStatusDto,
   ) {
     const request = await this.getRequestById(requestId);

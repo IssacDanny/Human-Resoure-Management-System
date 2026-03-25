@@ -10,7 +10,7 @@ export class LeaveRepository {
     return this.prisma.leaveRequest.create({ data });
   }
 
-  async findById(id: string): Promise<LeaveRequest | null> {
+  async findById(id: number): Promise<LeaveRequest | null> {
     return this.prisma.leaveRequest.findUnique({
       where: { id },
       include: { employee: true, decider: true }, // Include relations for the response
