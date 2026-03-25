@@ -7,6 +7,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { AttendanceModule } from './modules/attendance/attendance.module';
 import { LeaveModule } from './modules/leave/leave.module';
 import { PayrollModule } from './modules/payroll/payroll.module';
+import { DepartmentsModule } from './modules/departments/departments.module';
 import { ConfigModule } from '@nestjs/config';
 
 @Module({
@@ -20,6 +21,7 @@ import { ConfigModule } from '@nestjs/config';
     AttendanceModule,
     LeaveModule,
     PayrollModule,
+    DepartmentsModule,
   ],
   controllers: [],
   providers: [
