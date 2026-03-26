@@ -1,12 +1,20 @@
 import './index.css';
 import { Routes, Route } from 'react-router-dom';
+import { useAuth } from './contexts/AuthContext';
 import { AppLayout } from './layouts/AppLayout';
+import { LoginPage } from './pages/LoginPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { CreateEmployeePage } from './pages/CreateEmployeePage';
 import { EmployeeListPage } from './pages/EmployeeListPage';
 import { PlaceholderPage } from './pages/PlaceholderPage';
 
 function App() {
+  const { isAuthenticated } = useAuth();
+
+  if (!isAuthenticated) {
+    return <LoginPage />;
+  }
+
   return (
     <Routes>
       <Route element={<AppLayout />}>

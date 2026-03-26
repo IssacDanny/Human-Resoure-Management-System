@@ -32,7 +32,7 @@ const MOCK_ADMIN: AuthUser = {
   workEmail: 'admin@hrms.internal',
   department: 'Human Resources',
   jobTitle: 'HR Administrator',
-  role: Role.ADMIN_HR,
+  role: Role.admin,
 };
 
 // --- Context ---
@@ -40,8 +40,8 @@ const MOCK_ADMIN: AuthUser = {
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<AuthUser | null>(MOCK_ADMIN);
-  const [token, setToken] = useState<string | null>('mock-jwt-token');
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [token, setToken] = useState<string | null>(null);
 
   const isAuthenticated = user !== null;
   const isAdmin = user?.role === Role.admin;
