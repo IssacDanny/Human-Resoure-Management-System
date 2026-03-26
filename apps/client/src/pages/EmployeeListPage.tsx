@@ -12,6 +12,7 @@ type RawEmployee = {
   joinDate: string;
   basicSalary: string;
   departmentId: number;
+  department?: { id: number; name: string };
   jobTitle: string;
 };
 
@@ -135,28 +136,26 @@ export function EmployeeListPage() {
                 No employees found for your role/department.
               </p>
             ) : (
-              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
                 <thead>
                   <tr>
-                    <th style={{ padding: '12px', borderBottom: '1px solid var(--color-border)' }}>Name</th>
-                    <th style={{ padding: '12px', borderBottom: '1px solid var(--color-border)' }}>Email</th>
-                    <th style={{ padding: '12px', borderBottom: '1px solid var(--color-border)' }}>Role</th>
-                    <th style={{ padding: '12px', borderBottom: '1px solid var(--color-border)' }}>Department ID</th>
-                    <th style={{ padding: '12px', borderBottom: '1px solid var(--color-border)' }}>Job Title</th>
-                    <th style={{ padding: '12px', borderBottom: '1px solid var(--color-border)' }}>Status</th>
-                    <th style={{ padding: '12px', borderBottom: '1px solid var(--color-border)' }}>Actions</th>
+                    <th style={{ padding: '12px', borderBottom: '1px solid var(--color-border)', textAlign: 'left', width: '20%' }}>Name</th>
+                    <th style={{ padding: '12px', borderBottom: '1px solid var(--color-border)', textAlign: 'left', width: '15%' }}>Role</th>
+                    <th style={{ padding: '12px', borderBottom: '1px solid var(--color-border)', textAlign: 'left', width: '20%' }}>Department</th>
+                    <th style={{ padding: '12px', borderBottom: '1px solid var(--color-border)', textAlign: 'left', width: '25%' }}>Job Title</th>
+                    <th style={{ padding: '12px', borderBottom: '1px solid var(--color-border)', textAlign: 'left', width: '20%' }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {visibleEmployees.map((emp) => (
                     <tr key={emp.id}>
-                      <td style={{ padding: '12px', borderBottom: '1px solid var(--color-border)' }}>{emp.fullName}</td>
-                      <td style={{ padding: '12px', borderBottom: '1px solid var(--color-border)' }}>{emp.workEmail}</td>
-                      <td style={{ padding: '12px', borderBottom: '1px solid var(--color-border)' }}>{emp.role}</td>
-                      <td style={{ padding: '12px', borderBottom: '1px solid var(--color-border)' }}>{emp.departmentId}</td>
-                      <td style={{ padding: '12px', borderBottom: '1px solid var(--color-border)' }}>{emp.jobTitle}</td>
-                      <td style={{ padding: '12px', borderBottom: '1px solid var(--color-border)' }}>{emp.status}</td>
-                      <td style={{ padding: '12px', borderBottom: '1px solid var(--color-border)' }}>
+                      <td style={{ padding: '12px', borderBottom: '1px solid var(--color-border)', textAlign: 'left', verticalAlign: 'top' }}>{emp.fullName}</td>
+                      <td style={{ padding: '12px', borderBottom: '1px solid var(--color-border)', textAlign: 'left', verticalAlign: 'top' }}>{emp.role}</td>
+                      <td style={{ padding: '12px', borderBottom: '1px solid var(--color-border)', textAlign: 'left', verticalAlign: 'top' }}>
+                        {emp.department?.name ?? `ID ${emp.departmentId}`}
+                      </td>
+                      <td style={{ padding: '12px', borderBottom: '1px solid var(--color-border)', textAlign: 'left', verticalAlign: 'top' }}>{emp.jobTitle}</td>
+                      <td style={{ padding: '12px', borderBottom: '1px solid var(--color-border)', textAlign: 'left', verticalAlign: 'top' }}>
                         {emp.status === 'ACTIVE' ? (
                           <button
                             className="btn btn-danger"

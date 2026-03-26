@@ -16,14 +16,16 @@ export class EmployeesRepository {
     cursor?: Prisma.EmployeeWhereUniqueInput;
     where?: Prisma.EmployeeWhereInput;
     orderBy?: Prisma.EmployeeOrderByWithRelationInput;
+    include?: Prisma.EmployeeInclude;
   }): Promise<Employee[]> {
-    const { skip, take, cursor, where, orderBy } = params;
+    const { skip, take, cursor, where, orderBy, include } = params;
     return this.prisma.employee.findMany({
       skip,
       take,
       cursor,
       where,
       orderBy,
+      include,
     });
   }
 

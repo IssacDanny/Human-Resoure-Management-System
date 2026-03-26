@@ -53,6 +53,7 @@ export class EmployeesService {
       take,
       skip,
       where: { status: 'ACTIVE' }, // Default filter
+      include: { department: true },
     });
 
     // Wrap the result to match the API Contract (EmployeeConnection)
