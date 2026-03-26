@@ -1,4 +1,4 @@
-import type { CreateEmployeePayload, Employee } from '../types/employee';
+import type { CreateEmployeePayload, Employee, Department } from '../types/employee';
 
 const BASE_URL = 'http://localhost:3000';
 
@@ -51,4 +51,37 @@ export async function createEmployee(payload: CreateEmployeePayload, token: stri
   }
 
   return data as Employee;
+}
+
+/**
+ * Fetches all departments from GET /departments.
+ * @throws {ApiError} for 4xx/5xx responses
+ */
+export async function fetchDepartments(token: string): Promise<Department[]> {
+  const response = await fetch(`${BASE_URL}/departments`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+  });
+
+  let data: unknown;
+  try {
+    data = await response.json();
+  } catch {
+    throw createApiError(response.status, 'Server returned an unexpected response.');
+  }
+
+  if (!response.ok) {
+    const errorData = data as { message?: string | string[]; error?: string };
+    const message = Array.isArray(errorData.message)
+      ? errorData.message.join(', ')
+      : (errorData.message ?? errorData.error ?? 'An unknown error occurred.');
+    throw createApiError(response.status, message);
+  }
+
+  // Server returns { data: Department[] }
+  const apiResponse = data as { data?: Department[] };
+  return apiResponse.data ?? [];
 }

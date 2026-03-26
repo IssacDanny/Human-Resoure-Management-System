@@ -1,6 +1,6 @@
-import { useState, type FormEvent, type ChangeEvent } from 'react';
-import { Role, type CreateEmployeePayload, type Employee } from '../types/employee';
-import { createEmployee, isApiError, type ApiError } from '../api/employeeApi';
+import { useState, useEffect, type FormEvent, type ChangeEvent } from 'react';
+import { Role, mapRoleToServer, type CreateEmployeePayload, type Employee, type Department } from '../types/employee';
+import { createEmployee, fetchDepartments, isApiError, type ApiError } from '../api/employeeApi';
 import { FormField } from './ui/FormField';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -86,6 +86,28 @@ export function CreateEmployeeForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successEmployee, setSuccessEmployee] = useState<Employee | null>(null);
   const [serverError, setServerError] = useState<string | null>(null);
+  const [departments, setDepartments] = useState<Department[]>([]);
+  const [deptLoading, setDeptLoading] = useState(false);
+  const [deptError, setDeptError] = useState<string | null>(null);
+
+  const { token } = useAuth();
+
+  // Fetch departments on mount
+  useEffect(() => {
+    if (!token) return;
+    
+    setDeptLoading(true);
+    fetchDepartments(token)
+      .then((depts) => {
+        setDepartments(depts);
+        setDeptError(null);
+      })
+      .catch(() => {
+        setDeptError('Failed to load departments');
+        setDepartments([]);
+      })
+      .finally(() => setDeptLoading(false));
+  }, [token]);
 
   function handleChange(e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
     const { name, value } = e.target;
@@ -95,8 +117,6 @@ export function CreateEmployeeForm() {
       setErrors((prev) => ({ ...prev, [name]: undefined }));
     }
   }
-
-  const { token } = useAuth();
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -119,11 +139,11 @@ export function CreateEmployeeForm() {
     const payload: CreateEmployeePayload = {
       fullName: values.fullName.trim(),
       workEmail: values.workEmail.trim(),
-      department: values.department.trim(),
+      departmentId: Number(values.department), // Convert string to number
       jobTitle: values.jobTitle.trim(),
       basicSalary: Number(values.basicSalary),
       joinDate: values.joinDate,
-      role: values.role as Role,
+      role: mapRoleToServer(values.role as Role), // Map to server format
     };
 
     try {
@@ -241,17 +261,28 @@ export function CreateEmployeeForm() {
         {/* Row 2: Department + Job Title */}
         <div className="form-row">
           <FormField id="department" label="Department" error={errors.department} required>
-            <input
+            {deptError && (
+              <div className="alert alert-error" style={{ marginBottom: '8px', fontSize: '0.875rem' }}>
+                {deptError}
+              </div>
+            )}
+            <select
               id="department"
               name="department"
-              type="text"
               className={`form-input ${errors.department ? 'input-error' : ''}`}
-              placeholder="e.g. Engineering"
               value={values.department}
               onChange={handleChange}
+              disabled={deptLoading}
               aria-describedby={errors.department ? 'department-error' : undefined}
               aria-invalid={!!errors.department}
-            />
+            >
+              <option value="">{deptLoading ? 'Loading departments...' : 'Select a department'}</option>
+              {departments.map((dept) => (
+                <option key={dept.id} value={dept.id}>
+                  {dept.name}
+                </option>
+              ))}
+            </select>
           </FormField>
 
           <FormField id="jobTitle" label="Job Title" error={errors.jobTitle} required>
@@ -314,8 +345,8 @@ export function CreateEmployeeForm() {
               aria-invalid={!!errors.role}
             >
               <option value="" disabled>Select a role…</option>
-              <option value={Role.EMPLOYEE}>Employee</option>
-              <option value={Role.MANAGER}>Manager</option>
+              <option value={Role.employee}>Employee</option>
+              <option value={Role.manager}>Manager</option>
               <option value={Role.admin}>Admin / HR</option>
             </select>
           </FormField>

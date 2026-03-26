@@ -8,19 +8,29 @@ export const Role = {
 
 export type Role = (typeof Role)[keyof typeof Role];
 
+// Server role format (uppercase)
+export type ServerRole = 'ADMIN_HR' | 'MANAGER' | 'EMPLOYEE';
+
+// Map internal role to server format
+export function mapRoleToServer(role: Role): ServerRole {
+  switch (role) {
+    case 'admin':
+      return 'ADMIN_HR';
+    case 'manager':
+      return 'MANAGER';
+    case 'employee':
+      return 'EMPLOYEE';
+  }
+}
+
 export interface CreateEmployeePayload {
   fullName: string;
   workEmail: string;
-  // NOTE: The API contract spec uses 'department', but the actual server DTO
-  // uses 'departmentId' (MVP placeholder for a future relation). We follow
-  // the server DTO so the request body is accepted by the real endpoint.
-  department: string;
+  departmentId: number; // Changed from 'department: string'
   jobTitle: string;
   basicSalary: number;
   joinDate: string; // ISO date string: YYYY-MM-DD
-  // NOTE: API contract specifies [admin, manager, employee] but the server
-  // Prisma enum uses ADMIN_HR | MANAGER | EMPLOYEE — we follow the server.
-  role: Role;
+  role: ServerRole; // Changed to ServerRole (ADMIN_HR | MANAGER | EMPLOYEE)
 }
 
 // Employee response shape returned by the server (raw Prisma model)
@@ -38,4 +48,14 @@ export interface Employee {
   role: Role;
   joinDate: string;
   createdAt: string;
+}
+
+// Department response shape from the server API
+export interface Department {
+  id: number;
+  name: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  employees: Employee[];
 }

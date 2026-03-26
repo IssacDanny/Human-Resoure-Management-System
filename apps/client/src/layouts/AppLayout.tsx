@@ -195,20 +195,6 @@ export function AppLayout() {
           </button>
 
           <div className="topbar-right">
-            {/* Dev role switcher */}
-            {isAdmin && (
-              <select
-                className="topbar-role-switcher"
-                value={user?.role ?? ''}
-                onChange={(e) => switchRole(e.target.value as Role)}
-                title="Dev: Switch role for testing"
-              >
-                <option value={Role.admin}>Admin / HR</option>
-                <option value={Role.manager}>Manager</option>
-                <option value={Role.employee}>Employee</option>
-              </select>
-            )}
-
             <div className="topbar-user" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <div className="topbar-avatar">
                 {user?.fullName.charAt(0).toUpperCase() ?? '?'}
