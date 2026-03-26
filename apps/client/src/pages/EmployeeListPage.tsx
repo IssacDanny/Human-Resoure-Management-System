@@ -1,10 +1,77 @@
 import { Link } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { Role } from '../types/employee';
 
+type RawEmployee = {
+  id: number;
+  fullName: string;
+  workEmail: string;
+  role: 'ADMIN_HR' | 'MANAGER' | 'EMPLOYEE';
+  status: string;
+  joinDate: string;
+  basicSalary: string;
+  departmentId: number;
+  jobTitle: string;
+};
+
 export function EmployeeListPage() {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const isBlocked = user?.role === Role.employee;
+  const [employees, setEmployees] = useState<RawEmployee[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (!user || isBlocked) return;
+    let ignore = false;
+
+    async function loadEmployees() {
+      setLoading(true);
+      setError('');
+      try {
+        const res = await fetch('http://localhost:3000/employees', {
+          headers: {
+            Authorization: token ? `Bearer ${token}` : '',
+          },
+        });
+
+        if (!res.ok) {
+          throw new Error(`Failed to fetch (${res.status})`);
+        }
+
+        const { data } = await res.json();
+        if (!ignore) {
+          setEmployees(Array.isArray(data) ? data : []);
+        }
+      } catch (err) {
+        if (!ignore) {
+          setError((err as Error).message || 'Failed to load employees.');
+        }
+      } finally {
+        if (!ignore) setLoading(false);
+      }
+    }
+
+    loadEmployees();
+
+    return () => {
+      ignore = true;
+    };
+  }, [user, isBlocked, token]);
+
+  const visibleEmployees = useMemo(() => {
+    if (!user) return [];
+    if (user.role === Role.admin) return employees;
+    if (user.role === Role.manager) {
+      const deptId = Number(user.department);
+      if (!Number.isNaN(deptId)) {
+        return employees.filter((emp) => emp.departmentId === deptId);
+      }
+      return employees;
+    }
+    return [];
+  }, [user, employees]);
 
   return (
     <div className="page-container">
@@ -37,10 +104,44 @@ export function EmployeeListPage() {
               </p>
             </div>
           </div>
+        ) : loading ? (
+          <p style={{ color: 'var(--color-text-muted)', textAlign: 'center', padding: '48px 0' }}>Loading employees...</p>
+        ) : error ? (
+          <div className="alert alert-error" style={{ justifyContent: 'center' }}>
+            <span className="alert-icon">⚠️</span>
+            <p style={{ margin: 0 }}>{error}</p>
+          </div>
         ) : (
-          <p style={{ color: 'var(--color-text-muted)', textAlign: 'center', padding: '48px 0' }}>
-            Employee list will be implemented in Phase 2.
-          </p>
+          <div>
+            {visibleEmployees.length === 0 ? (
+              <p style={{ color: 'var(--color-text-muted)', textAlign: 'center', padding: '48px 0' }}>
+                No employees found for your role/department.
+              </p>
+            ) : (
+              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <thead>
+                  <tr>
+                    <th style={{ padding: '12px', borderBottom: '1px solid var(--color-border)' }}>Name</th>
+                    <th style={{ padding: '12px', borderBottom: '1px solid var(--color-border)' }}>Email</th>
+                    <th style={{ padding: '12px', borderBottom: '1px solid var(--color-border)' }}>Role</th>
+                    <th style={{ padding: '12px', borderBottom: '1px solid var(--color-border)' }}>Department ID</th>
+                    <th style={{ padding: '12px', borderBottom: '1px solid var(--color-border)' }}>Job Title</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {visibleEmployees.map((emp) => (
+                    <tr key={emp.id}>
+                      <td style={{ padding: '12px', borderBottom: '1px solid var(--color-border)' }}>{emp.fullName}</td>
+                      <td style={{ padding: '12px', borderBottom: '1px solid var(--color-border)' }}>{emp.workEmail}</td>
+                      <td style={{ padding: '12px', borderBottom: '1px solid var(--color-border)' }}>{emp.role}</td>
+                      <td style={{ padding: '12px', borderBottom: '1px solid var(--color-border)' }}>{emp.departmentId}</td>
+                      <td style={{ padding: '12px', borderBottom: '1px solid var(--color-border)' }}>{emp.jobTitle}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
         )}
       </div>
     </div>

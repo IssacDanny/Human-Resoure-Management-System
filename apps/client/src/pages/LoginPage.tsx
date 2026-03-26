@@ -86,7 +86,7 @@ export function LoginPage() {
 
         <div className="login-footer">
           <p className="login-footer-text">
-            Demo credentials: admin@hrms.internal / any password
+            Demo credentials: admin@hrms.internal / Welcome123!
           </p>
         </div>
       </div>
