@@ -43,7 +43,7 @@ export class AuthService {
         fullName: user.fullName,
         email: user.workEmail,
         role: user.role,
-        department: user.department,
+        departmentId: user.departmentId,
         jobTitle: user.jobTitle,
       },
     };

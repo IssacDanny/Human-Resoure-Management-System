@@ -82,11 +82,7 @@ export function EmployeeListPage() {
     if (!user) return [];
     if (user.role === Role.admin) return employees;
     if (user.role === Role.manager) {
-      const deptId = Number(user.department);
-      if (!Number.isNaN(deptId)) {
-        return employees.filter((emp) => emp.departmentId === deptId);
-      }
-      return employees;
+      return employees.filter((emp) => emp.departmentId === user.departmentId);
     }
     return [];
   }, [user, employees]);
@@ -99,7 +95,7 @@ export function EmployeeListPage() {
             <h1 className="page-title">Employees</h1>
             <p className="page-subtitle">Manage your organization's workforce.</p>
           </div>
-          {!isBlocked && (
+          {user?.role === Role.admin && (
             <Link to="/employees/new" className="btn btn-primary">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
                 <line x1="12" y1="5" x2="12" y2="19" />
@@ -143,7 +139,9 @@ export function EmployeeListPage() {
                     <th style={{ padding: '12px', borderBottom: '1px solid var(--color-border)', textAlign: 'left', width: '15%' }}>Role</th>
                     <th style={{ padding: '12px', borderBottom: '1px solid var(--color-border)', textAlign: 'left', width: '20%' }}>Department</th>
                     <th style={{ padding: '12px', borderBottom: '1px solid var(--color-border)', textAlign: 'left', width: '25%' }}>Job Title</th>
+                    {user?.role === Role.admin && (
                     <th style={{ padding: '12px', borderBottom: '1px solid var(--color-border)', textAlign: 'left', width: '20%' }}>Actions</th>
+                    )}
                   </tr>
                 </thead>
                 <tbody>
@@ -155,6 +153,7 @@ export function EmployeeListPage() {
                         {emp.department?.name ?? `ID ${emp.departmentId}`}
                       </td>
                       <td style={{ padding: '12px', borderBottom: '1px solid var(--color-border)', textAlign: 'left', verticalAlign: 'top' }}>{emp.jobTitle}</td>
+                      {user?.role === Role.admin && (
                       <td style={{ padding: '12px', borderBottom: '1px solid var(--color-border)', textAlign: 'left', verticalAlign: 'top' }}>
                         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                           <Link
@@ -178,6 +177,7 @@ export function EmployeeListPage() {
                           )}
                         </div>
                       </td>
+                      )}
                     </tr>
                   ))}
                 </tbody>

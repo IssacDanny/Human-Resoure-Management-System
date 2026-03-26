@@ -7,7 +7,7 @@ export interface AuthUser {
   id: string;
   fullName: string;
   workEmail: string;
-  department: string;
+  departmentId: number;
   jobTitle: string;
   role: Role;
 }
@@ -35,7 +35,7 @@ type LoginApiResponse = {
     email: string;
     role: ApiRole;
     jobTitle: string;
-    department?: string;
+    departmentId?: number;
   };
 };
 
@@ -90,7 +90,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       id: String(data.user.id),
       fullName: data.user.fullName,
       workEmail: data.user.email,
-      department: data.user.department ?? '',
+      departmentId: data.user.departmentId ?? 0,
       jobTitle: data.user.jobTitle,
       role: mapApiRole(data.user.role),
     };

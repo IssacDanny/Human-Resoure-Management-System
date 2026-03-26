@@ -98,7 +98,7 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   { to: '/', label: 'Dashboard', icon: <DashboardIcon /> },
-  { to: '/employees', label: 'Employees', icon: <EmployeesIcon /> },
+  { to: '/employees', label: 'Employees', icon: <EmployeesIcon />, roles: [Role.admin, Role.manager] },
   { to: '/departments', label: 'Departments', icon: <DepartmentIcon />, roles: [Role.admin] },
   { to: '/leave', label: 'Leave', icon: <LeaveIcon /> },
   { to: '/attendance', label: 'Attendance', icon: <AttendanceIcon /> },
