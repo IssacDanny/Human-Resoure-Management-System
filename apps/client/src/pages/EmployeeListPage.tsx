@@ -21,43 +21,60 @@ export function EmployeeListPage() {
   const [employees, setEmployees] = useState<RawEmployee[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [deactivatingId, setDeactivatingId] = useState<number | null>(null);
+
+  async function loadEmployees() {
+    setLoading(true);
+    setError('');
+    try {
+      const res = await fetch('http://localhost:3000/employees', {
+        headers: {
+          Authorization: token ? `Bearer ${token}` : '',
+        },
+      });
+
+      if (!res.ok) {
+        throw new Error(`Failed to fetch (${res.status})`);
+      }
+
+      const { data } = await res.json();
+      setEmployees(Array.isArray(data) ? data : []);
+    } catch (err) {
+      setError((err as Error).message || 'Failed to load employees.');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function deactivateEmployee(employeeId: number) {
+    if (!token) return;
+    setDeactivatingId(employeeId);
+
+    try {
+      const res = await fetch(`http://localhost:3000/employees/${employeeId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ status: 'INACTIVE' }),
+      });
+
+      if (!res.ok) {
+        throw new Error(`Failed to deactivate (${res.status})`);
+      }
+
+      await loadEmployees();
+    } catch (err) {
+      setError((err as Error).message || 'Failed to deactivate employee.');
+    } finally {
+      setDeactivatingId(null);
+    }
+  }
 
   useEffect(() => {
     if (!user || isBlocked) return;
-    let ignore = false;
-
-    async function loadEmployees() {
-      setLoading(true);
-      setError('');
-      try {
-        const res = await fetch('http://localhost:3000/employees', {
-          headers: {
-            Authorization: token ? `Bearer ${token}` : '',
-          },
-        });
-
-        if (!res.ok) {
-          throw new Error(`Failed to fetch (${res.status})`);
-        }
-
-        const { data } = await res.json();
-        if (!ignore) {
-          setEmployees(Array.isArray(data) ? data : []);
-        }
-      } catch (err) {
-        if (!ignore) {
-          setError((err as Error).message || 'Failed to load employees.');
-        }
-      } finally {
-        if (!ignore) setLoading(false);
-      }
-    }
-
     loadEmployees();
-
-    return () => {
-      ignore = true;
-    };
   }, [user, isBlocked, token]);
 
   const visibleEmployees = useMemo(() => {
@@ -126,6 +143,8 @@ export function EmployeeListPage() {
                     <th style={{ padding: '12px', borderBottom: '1px solid var(--color-border)' }}>Role</th>
                     <th style={{ padding: '12px', borderBottom: '1px solid var(--color-border)' }}>Department ID</th>
                     <th style={{ padding: '12px', borderBottom: '1px solid var(--color-border)' }}>Job Title</th>
+                    <th style={{ padding: '12px', borderBottom: '1px solid var(--color-border)' }}>Status</th>
+                    <th style={{ padding: '12px', borderBottom: '1px solid var(--color-border)' }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -136,6 +155,20 @@ export function EmployeeListPage() {
                       <td style={{ padding: '12px', borderBottom: '1px solid var(--color-border)' }}>{emp.role}</td>
                       <td style={{ padding: '12px', borderBottom: '1px solid var(--color-border)' }}>{emp.departmentId}</td>
                       <td style={{ padding: '12px', borderBottom: '1px solid var(--color-border)' }}>{emp.jobTitle}</td>
+                      <td style={{ padding: '12px', borderBottom: '1px solid var(--color-border)' }}>{emp.status}</td>
+                      <td style={{ padding: '12px', borderBottom: '1px solid var(--color-border)' }}>
+                        {emp.status === 'ACTIVE' ? (
+                          <button
+                            className="btn btn-danger"
+                            disabled={deactivatingId === emp.id}
+                            onClick={() => deactivateEmployee(emp.id)}
+                          >
+                            {deactivatingId === emp.id ? 'Deactivating...' : 'Deactivate'}
+                          </button>
+                        ) : (
+                          'Inactive'
+                        )}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
