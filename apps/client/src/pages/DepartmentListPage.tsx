@@ -12,6 +12,7 @@ export function DepartmentListPage() {
   const [newName, setNewName] = useState('');
   const [creating, setCreating] = useState(false);
   const [formError, setFormError] = useState('');
+  const [deactivatingId, setDeactivatingId] = useState<number | null>(null);
 
   function loadDepartments() {
     if (!token) return;
@@ -41,6 +42,27 @@ export function DepartmentListPage() {
       setFormError((err as Error).message || 'Failed to create department.');
     } finally {
       setCreating(false);
+    }
+  }
+
+  async function handleDeactivate(id: number) {
+    if (!token) return;
+    setDeactivatingId(id);
+    try {
+      const res = await fetch(`http://localhost:3000/departments/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ isActive: false }),
+      });
+      if (!res.ok) throw new Error(`Failed to deactivate (${res.status})`);
+      loadDepartments();
+    } catch (err) {
+      setError((err as Error).message || 'Failed to deactivate department.');
+    } finally {
+      setDeactivatingId(null);
     }
   }
 
@@ -110,17 +132,15 @@ export function DepartmentListPage() {
           <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
             <thead>
               <tr>
-                <th style={{ padding: '12px', borderBottom: '1px solid var(--color-border)', textAlign: 'left', width: '10%' }}>ID</th>
                 <th style={{ padding: '12px', borderBottom: '1px solid var(--color-border)', textAlign: 'left', width: '30%' }}>Name</th>
                 <th style={{ padding: '12px', borderBottom: '1px solid var(--color-border)', textAlign: 'left', width: '20%' }}>Employees</th>
-                <th style={{ padding: '12px', borderBottom: '1px solid var(--color-border)', textAlign: 'left', width: '15%' }}>Status</th>
-                <th style={{ padding: '12px', borderBottom: '1px solid var(--color-border)', textAlign: 'left', width: '25%' }}>Created At</th>
+                <th style={{ padding: '12px', borderBottom: '1px solid var(--color-border)', textAlign: 'left', width: '20%' }}>Status</th>
+                <th style={{ padding: '12px', borderBottom: '1px solid var(--color-border)', textAlign: 'left', width: '30%' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {departments.map((dept) => (
                 <tr key={dept.id}>
-                  <td style={{ padding: '12px', borderBottom: '1px solid var(--color-border)', textAlign: 'left', verticalAlign: 'top' }}>{dept.id}</td>
                   <td style={{ padding: '12px', borderBottom: '1px solid var(--color-border)', textAlign: 'left', verticalAlign: 'top' }}>{dept.name}</td>
                   <td style={{ padding: '12px', borderBottom: '1px solid var(--color-border)', textAlign: 'left', verticalAlign: 'top' }}>{dept.employees?.length ?? 0}</td>
                   <td style={{ padding: '12px', borderBottom: '1px solid var(--color-border)', textAlign: 'left', verticalAlign: 'top' }}>
@@ -137,7 +157,18 @@ export function DepartmentListPage() {
                     </span>
                   </td>
                   <td style={{ padding: '12px', borderBottom: '1px solid var(--color-border)', textAlign: 'left', verticalAlign: 'top' }}>
-                    {new Date(dept.createdAt).toLocaleDateString()}
+                    {dept.isActive && (dept.employees?.length ?? 0) === 0 ? (
+                      <button
+                        className="btn btn-danger"
+                        disabled={deactivatingId === dept.id}
+                        onClick={() => handleDeactivate(dept.id)}
+                        style={{ fontSize: '0.875rem', padding: '6px 12px' }}
+                      >
+                        {deactivatingId === dept.id ? 'Deactivating...' : 'Deactivate'}
+                      </button>
+                    ) : !dept.isActive ? (
+                      <span style={{ color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>Inactive</span>
+                    ) : null}
                   </td>
                 </tr>
               ))}
