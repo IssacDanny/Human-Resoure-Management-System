@@ -185,7 +185,7 @@ export function CreateEmployeeForm() {
             <strong>{successEmployee.fullName}</strong> has been successfully added to the system.
           </p>
           <div className="success-details">
-            <span className="detail-chip">{successEmployee.department}</span>
+            <span className="detail-chip">{successEmployee.department?.name}</span>
             <span className="detail-chip">{successEmployee.jobTitle}</span>
           </div>
           <p className="success-hint">

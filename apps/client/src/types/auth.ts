@@ -1,4 +1,4 @@
-import { EmployeeSummary } from './employee';
+import type { Employee } from './employee';
 
 export interface LoginRequest {
   email: string;
@@ -9,5 +9,5 @@ export interface LoginResponse {
   accessToken: string;
   tokenType: string;
   expiresIn: number;
-  user?: EmployeeSummary;
+  user?: Employee;
 }

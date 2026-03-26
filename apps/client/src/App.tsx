@@ -7,6 +7,7 @@ import { DashboardPage } from './pages/DashboardPage';
 import { CreateEmployeePage } from './pages/CreateEmployeePage';
 import { EditEmployeePage } from './pages/EditEmployeePage';
 import { EmployeeListPage } from './pages/EmployeeListPage';
+import { MyProfilePage } from './pages/MyProfilePage';
 import { PlaceholderPage } from './pages/PlaceholderPage';
 
 // Protected Route wrapper component
@@ -56,10 +57,7 @@ function App() {
           path="/payroll"
           element={<PlaceholderPage title="Payroll" description="Generate payroll and view payslips." />}
         />
-        <Route
-          path="/my-profile"
-          element={<PlaceholderPage title="My Profile" description="View and update your personal information." />}
-        />
+        <Route path="/my-profile" element={<MyProfilePage />} />
 
         {/* Catch-all */}
         <Route

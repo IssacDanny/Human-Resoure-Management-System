@@ -82,9 +82,18 @@ export class EmployeesService {
   }
 
   async updateProfile(id: number, dto: UpdateEmployeeDto) {
+    // Convert date strings to Date objects if present
+    const data: any = { ...dto };
+    if (dto.dob) {
+      data.dob = new Date(dto.dob);
+    }
+    if (dto.joinDate) {
+      data.joinDate = new Date(dto.joinDate);
+    }
+
     return this.repository.update({
       where: { id },
-      data: dto,
+      data,
     });
   }
 

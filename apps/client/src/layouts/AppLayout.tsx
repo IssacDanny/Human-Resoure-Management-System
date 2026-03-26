@@ -99,7 +99,7 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   { to: '/', label: 'Dashboard', icon: <DashboardIcon /> },
   { to: '/employees', label: 'Employees', icon: <EmployeesIcon /> },
-  { to: '/departments', label: 'Departments', icon: <DepartmentIcon />, roles: [Role.ADMIN_HR] },
+  { to: '/departments', label: 'Departments', icon: <DepartmentIcon />, roles: [Role.admin] },
   { to: '/leave', label: 'Leave', icon: <LeaveIcon /> },
   { to: '/attendance', label: 'Attendance', icon: <AttendanceIcon /> },
   { to: '/payroll', label: 'Payroll', icon: <PayrollIcon /> },
@@ -108,7 +108,7 @@ const NAV_ITEMS: NavItem[] = [
 // --- Layout Component ---
 
 export function AppLayout() {
-  const { user, login, logout, switchRole, isAdmin } = useAuth();
+  const { user, login, logout } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const roleLabel: Record<Role, string> = {

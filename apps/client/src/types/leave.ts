@@ -1,8 +1,8 @@
-import { EmployeeSummary } from './employee';
+import type { Employee } from './employee';
 
 export interface LeaveRequest {
   id: string;
-  employee?: EmployeeSummary;
+  employee?: Employee;
   leaveType: 'annual' | 'sick' | 'unpaid';
   startDate: string; // YYYY-MM-DD
   endDate: string;   // YYYY-MM-DD

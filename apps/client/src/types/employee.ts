@@ -33,6 +33,22 @@ export interface CreateEmployeePayload {
   role: ServerRole; // Changed to ServerRole (ADMIN_HR | MANAGER | EMPLOYEE)
 }
 
+export interface UpdateEmployeePayload {
+  fullName?: string;
+  workEmail?: string;
+  departmentId?: number;
+  jobTitle?: string;
+  basicSalary?: number;
+  joinDate?: string;
+  role?: ServerRole;
+  status?: 'active' | 'inactive';
+  phone?: string;
+  dob?: string;
+  address?: string;
+  emergencyName?: string;
+  emergencyPhone?: string;
+}
+
 // Employee response shape returned by the server (raw Prisma model)
 export interface Employee {
   id: number;
@@ -40,16 +56,22 @@ export interface Employee {
   workEmail: string;
   personalEmail?: string | null;
   phone?: string | null;
+  dob?: string | null; // Date of birth
+  gender?: string | null;
   address?: string | null;
-  department: string;
-  departmentId?: number; // Added for when department is included
-  department?: Department; // Added for when department relation is included
+  emergencyName?: string | null; // Emergency contact name
+  emergencyPhone?: string | null; // Emergency contact phone
+  departmentId: number;
+  department?: Department; // Department relation (included when requested)
   jobTitle: string;
   basicSalary?: number;
   status: 'active' | 'inactive';
   role: Role;
   joinDate: string;
+  managerId?: number | null;
+  manager?: Employee | null;
   createdAt: string;
+  updatedAt: string;
 }
 
 // Department response shape from the server API

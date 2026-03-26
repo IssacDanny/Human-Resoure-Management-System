@@ -223,7 +223,7 @@ export function EditEmployeeForm() {
             <strong>{successEmployee.fullName}</strong> has been successfully updated.
           </p>
           <div className="success-details">
-            <span className="detail-chip">{successEmployee.department}</span>
+            <span className="detail-chip">{successEmployee.department?.name}</span>
             <span className="detail-chip">{successEmployee.jobTitle}</span>
           </div>
           <button className="btn btn-primary" onClick={handleReset}>

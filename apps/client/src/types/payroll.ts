@@ -1,4 +1,4 @@
-import { EmployeeSummary } from './employee';
+import type { Employee } from './employee';
 
 export interface GeneratePayrollRequest {
   month: string;                // YYYY-MM
@@ -14,7 +14,7 @@ export interface PayrollRunSummary {
 
 export interface Payslip {
   id: string;
-  employee?: EmployeeSummary;
+  employee?: Employee;
   month: string;
   standardWorkingDays?: number;
   actualWorkedDays?: number;

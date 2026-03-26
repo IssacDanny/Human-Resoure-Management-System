@@ -1,6 +1,6 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { CreateEmployeeDto } from './create-employee.dto';
-import { IsOptional, IsString, IsPhoneNumber, IsEnum } from 'class-validator';
+import { IsOptional, IsString, IsPhoneNumber, IsEnum, IsISO8601 } from 'class-validator';
 import { EmployeeStatus } from '@prisma/client';
 
 export class UpdateEmployeeDto extends PartialType(CreateEmployeeDto) {
@@ -15,6 +15,10 @@ export class UpdateEmployeeDto extends PartialType(CreateEmployeeDto) {
   @IsOptional()
   @IsPhoneNumber('VN') // Validates phone format (vietnam)
   phone?: string;
+
+  @IsOptional()
+  @IsISO8601()
+  dob?: string;
 
   @IsOptional()
   @IsString()

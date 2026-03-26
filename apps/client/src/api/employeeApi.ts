@@ -1,4 +1,4 @@
-import type { CreateEmployeePayload, Employee, Department } from '../types/employee';
+import type { CreateEmployeePayload, UpdateEmployeePayload, Employee, Department } from '../types/employee';
 
 const BASE_URL = 'http://localhost:3000';
 
@@ -84,4 +84,98 @@ export async function fetchDepartments(token: string): Promise<Department[]> {
   // Server returns { data: Department[] }
   const apiResponse = data as { data?: Department[] };
   return apiResponse.data ?? [];
+}
+
+/**
+ * Fetches all employees from GET /employees.
+ * @throws {ApiError} for 4xx/5xx responses
+ */
+export async function fetchEmployees(token: string): Promise<Employee[]> {
+  const response = await fetch(`${BASE_URL}/employees`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    },
+  });
+
+  let data: unknown;
+  try {
+    data = await response.json();
+  } catch {
+    throw createApiError(response.status, 'Server returned an unexpected response.');
+  }
+
+  if (!response.ok) {
+    const errorData = data as { message?: string | string[]; error?: string };
+    const message = Array.isArray(errorData.message)
+      ? errorData.message.join(', ')
+      : (errorData.message ?? errorData.error ?? 'An unknown error occurred.');
+    throw createApiError(response.status, message);
+  }
+
+  // Server returns { data: Employee[] }
+  const apiResponse = data as { data?: Employee[] };
+  return apiResponse.data ?? [];
+}
+
+/**
+ * Fetches a single employee by ID from GET /employees/:id.
+ * @throws {ApiError} for 4xx/5xx responses
+ */
+export async function getEmployeeById(id: string, token: string): Promise<Employee> {
+  const response = await fetch(`${BASE_URL}/employees/${id}`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    },
+  });
+
+  let data: unknown;
+  try {
+    data = await response.json();
+  } catch {
+    throw createApiError(response.status, 'Server returned an unexpected response.');
+  }
+
+  if (!response.ok) {
+    const errorData = data as { message?: string | string[]; error?: string };
+    const message = Array.isArray(errorData.message)
+      ? errorData.message.join(', ')
+      : (errorData.message ?? errorData.error ?? 'An unknown error occurred.');
+    throw createApiError(response.status, message);
+  }
+
+  return data as Employee;
+}
+
+/**
+ * Updates an employee by calling PATCH /employees/:id.
+ * @throws {ApiError} for 4xx/5xx responses
+ */
+export async function updateEmployee(id: string, payload: UpdateEmployeePayload, token: string): Promise<Employee> {
+  const response = await fetch(`${BASE_URL}/employees/${id}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify(payload),
+  });
+
+  let data: unknown;
+  try {
+    data = await response.json();
+  } catch {
+    throw createApiError(response.status, 'Server returned an unexpected response.');
+  }
+
+  if (!response.ok) {
+    const errorData = data as { message?: string | string[]; error?: string };
+    const message = Array.isArray(errorData.message)
+      ? errorData.message.join(', ')
+      : (errorData.message ?? errorData.error ?? 'An unknown error occurred.');
+    throw createApiError(response.status, message);
+  }
+
+  return data as Employee;
 }
