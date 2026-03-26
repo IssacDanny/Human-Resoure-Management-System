@@ -31,6 +31,7 @@ export interface CreateEmployeePayload {
   basicSalary: number;
   joinDate: string; // ISO date string: YYYY-MM-DD
   role: ServerRole; // Changed to ServerRole (ADMIN_HR | MANAGER | EMPLOYEE)
+  gender?: string;
 }
 
 export interface UpdateEmployeePayload {

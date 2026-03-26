@@ -14,6 +14,7 @@ interface FormValues {
   basicSalary: string; // Keep as string while user types, convert on submit
   joinDate: string;
   role: Role | '';
+  gender: string;
 }
 
 interface FormErrors {
@@ -34,6 +35,7 @@ const INITIAL_VALUES: FormValues = {
   basicSalary: '',
   joinDate: '',
   role: '',
+  gender: '',
 };
 
 // --- Validation ---
@@ -144,6 +146,7 @@ export function CreateEmployeeForm() {
       basicSalary: Number(values.basicSalary),
       joinDate: values.joinDate,
       role: mapRoleToServer(values.role as Role), // Map to server format
+      ...(values.gender ? { gender: values.gender } : {}),
     };
 
     try {
@@ -332,8 +335,23 @@ export function CreateEmployeeForm() {
           </FormField>
         </div>
 
-        {/* Row 4: Role (full width) */}
+        {/* Row 4: Gender + Role */}
         <div className="form-row">
+          <FormField id="gender" label="Gender">
+            <select
+              id="gender"
+              name="gender"
+              className="form-select"
+              value={values.gender}
+              onChange={handleChange}
+            >
+              <option value="">Select gender…</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </FormField>
+
           <FormField id="role" label="System Role" error={errors.role} required>
             <select
               id="role"

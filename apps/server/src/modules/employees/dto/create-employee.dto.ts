@@ -4,6 +4,7 @@ import {
   IsISO8601,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsString,
   Min,
 } from 'class-validator';
@@ -38,4 +39,8 @@ export class CreateEmployeeDto {
   @IsNotEmpty()
   @IsEnum(Role)
   role: Role;
+
+  @IsOptional()
+  @IsString()
+  gender?: string;
 }
