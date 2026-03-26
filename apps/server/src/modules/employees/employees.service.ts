@@ -45,9 +45,9 @@ export class EmployeesService {
   }
 
   async findAll(query: any) {
-    // Simple pagination for MVP
-    const take = query.limit ? Number(query.limit) : 25;
-    const skip = query.offset ? Number(query.offset) : 0;
+    // Pagination conditionally applied; default behavior returns all active rows.
+    const take = query.limit ? Number(query.limit) : undefined;
+    const skip = query.offset ? Number(query.offset) : undefined;
 
     const employees = await this.repository.findAll({
       take,
@@ -55,12 +55,12 @@ export class EmployeesService {
       where: { status: 'ACTIVE' }, // Default filter
     });
 
-    // FIX: Wrap the result to match the API Contract (EmployeeConnection)
+    // Wrap the result to match the API Contract (EmployeeConnection)
     return {
       data: employees,
       pagination: {
-        hasNextPage: employees.length === take, // Rough estimate for MVP
-        nextCursor: null, // We aren't using cursors yet in this skeleton
+        hasNextPage: take ? employees.length === take : false,
+        nextCursor: null, // Cursor pagination not implemented
       },
     };
   }
