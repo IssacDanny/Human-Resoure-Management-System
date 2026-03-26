@@ -156,17 +156,27 @@ export function EmployeeListPage() {
                       </td>
                       <td style={{ padding: '12px', borderBottom: '1px solid var(--color-border)', textAlign: 'left', verticalAlign: 'top' }}>{emp.jobTitle}</td>
                       <td style={{ padding: '12px', borderBottom: '1px solid var(--color-border)', textAlign: 'left', verticalAlign: 'top' }}>
-                        {emp.status === 'ACTIVE' ? (
-                          <button
-                            className="btn btn-danger"
-                            disabled={deactivatingId === emp.id}
-                            onClick={() => deactivateEmployee(emp.id)}
+                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                          <Link
+                            to={`/employees/${emp.id}/edit`}
+                            className="btn btn-secondary"
+                            style={{ fontSize: '0.875rem', padding: '6px 12px' }}
                           >
-                            {deactivatingId === emp.id ? 'Deactivating...' : 'Deactivate'}
-                          </button>
-                        ) : (
-                          'Inactive'
-                        )}
+                            Edit
+                          </Link>
+                          {emp.status === 'ACTIVE' ? (
+                            <button
+                              className="btn btn-danger"
+                              disabled={deactivatingId === emp.id}
+                              onClick={() => deactivateEmployee(emp.id)}
+                              style={{ fontSize: '0.875rem', padding: '6px 12px' }}
+                            >
+                              {deactivatingId === emp.id ? 'Deactivating...' : 'Deactivate'}
+                            </button>
+                          ) : (
+                            <span style={{ color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>Inactive</span>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   ))}

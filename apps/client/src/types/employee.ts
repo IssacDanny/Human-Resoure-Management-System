@@ -42,6 +42,8 @@ export interface Employee {
   phone?: string | null;
   address?: string | null;
   department: string;
+  departmentId?: number; // Added for when department is included
+  department?: Department; // Added for when department relation is included
   jobTitle: string;
   basicSalary?: number;
   status: 'active' | 'inactive';

@@ -5,6 +5,7 @@ import { AppLayout } from './layouts/AppLayout';
 import { LoginPage } from './pages/LoginPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { CreateEmployeePage } from './pages/CreateEmployeePage';
+import { EditEmployeePage } from './pages/EditEmployeePage';
 import { EmployeeListPage } from './pages/EmployeeListPage';
 import { PlaceholderPage } from './pages/PlaceholderPage';
 
@@ -36,6 +37,7 @@ function App() {
         {/* Employee Management */}
         <Route path="/employees" element={<EmployeeListPage />} />
         <Route path="/employees/new" element={<CreateEmployeePage />} />
+        <Route path="/employees/:id/edit" element={<EditEmployeePage />} />
 
         {/* Placeholder routes for future phases */}
         <Route

@@ -31,8 +31,9 @@ export class EmployeesRepository {
 
   async findOne(
     where: Prisma.EmployeeWhereUniqueInput,
+    include?: Prisma.EmployeeInclude,
   ): Promise<Employee | null> {
-    return this.prisma.employee.findUnique({ where });
+    return this.prisma.employee.findUnique({ where, include });
   }
 
   async update(params: {
