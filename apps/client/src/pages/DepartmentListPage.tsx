@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { fetchDepartments } from '../api/employeeApi';
+import { fetchDepartments, createDepartment } from '../api/employeeApi';
 import type { Department } from '../types/employee';
 
 export function DepartmentListPage() {
@@ -8,8 +8,12 @@ export function DepartmentListPage() {
   const [departments, setDepartments] = useState<Department[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showForm, setShowForm] = useState(false);
+  const [newName, setNewName] = useState('');
+  const [creating, setCreating] = useState(false);
+  const [formError, setFormError] = useState('');
 
-  useEffect(() => {
+  function loadDepartments() {
     if (!token) return;
     setLoading(true);
     setError('');
@@ -17,7 +21,28 @@ export function DepartmentListPage() {
       .then((data) => setDepartments(data))
       .catch((err) => setError((err as Error).message || 'Failed to load departments.'))
       .finally(() => setLoading(false));
+  }
+
+  useEffect(() => {
+    loadDepartments();
   }, [token]);
+
+  async function handleCreate(e: React.FormEvent) {
+    e.preventDefault();
+    if (!token || !newName.trim()) return;
+    setCreating(true);
+    setFormError('');
+    try {
+      await createDepartment(newName.trim(), token);
+      setNewName('');
+      setShowForm(false);
+      loadDepartments();
+    } catch (err) {
+      setFormError((err as Error).message || 'Failed to create department.');
+    } finally {
+      setCreating(false);
+    }
+  }
 
   return (
     <div className="page-container">
@@ -27,8 +52,47 @@ export function DepartmentListPage() {
             <h1 className="page-title">Departments</h1>
             <p className="page-subtitle">Manage organization departments.</p>
           </div>
+          <button className="btn btn-primary" onClick={() => { setShowForm(!showForm); setFormError(''); }}>
+            {showForm ? 'Cancel' : (
+              <>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+                Add Department
+              </>
+            )}
+          </button>
         </div>
       </header>
+
+      {showForm && (
+        <div className="form-card" style={{ marginBottom: '24px' }}>
+          <form onSubmit={handleCreate} style={{ display: 'flex', gap: '12px', alignItems: 'flex-end' }}>
+            <div style={{ flex: 1 }}>
+              <label className="form-label" htmlFor="dept-name">Department Name</label>
+              <input
+                id="dept-name"
+                className="form-input"
+                type="text"
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+                placeholder="e.g. Engineering"
+                required
+              />
+            </div>
+            <button type="submit" className="btn btn-primary" disabled={creating} style={{ whiteSpace: 'nowrap' }}>
+              {creating ? 'Creating...' : 'Create'}
+            </button>
+          </form>
+          {formError && (
+            <div className="alert alert-error" style={{ marginTop: '12px' }}>
+              <span className="alert-icon">⚠️</span>
+              <p style={{ margin: 0 }}>{formError}</p>
+            </div>
+          )}
+        </div>
+      )}
 
       <div className="form-card">
         {loading ? (

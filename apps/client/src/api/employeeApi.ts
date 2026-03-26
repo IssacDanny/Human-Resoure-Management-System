@@ -87,6 +87,38 @@ export async function fetchDepartments(token: string): Promise<Department[]> {
 }
 
 /**
+ * Creates a new department by calling POST /departments.
+ * @throws {ApiError} for 4xx/5xx responses
+ */
+export async function createDepartment(name: string, token: string): Promise<Department> {
+  const response = await fetch(`${BASE_URL}/departments`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({ name }),
+  });
+
+  let data: unknown;
+  try {
+    data = await response.json();
+  } catch {
+    throw createApiError(response.status, 'Server returned an unexpected response.');
+  }
+
+  if (!response.ok) {
+    const errorData = data as { message?: string | string[]; error?: string };
+    const message = Array.isArray(errorData.message)
+      ? errorData.message.join(', ')
+      : (errorData.message ?? errorData.error ?? 'An unknown error occurred.');
+    throw createApiError(response.status, message);
+  }
+
+  return data as Department;
+}
+
+/**
  * Fetches all employees from GET /employees.
  * @throws {ApiError} for 4xx/5xx responses
  */
