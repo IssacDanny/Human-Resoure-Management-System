@@ -8,6 +8,7 @@ import { CreateEmployeePage } from './pages/CreateEmployeePage';
 import { EditEmployeePage } from './pages/EditEmployeePage';
 import { EmployeeListPage } from './pages/EmployeeListPage';
 import { MyProfilePage } from './pages/MyProfilePage';
+import { DepartmentListPage } from './pages/DepartmentListPage';
 import { PlaceholderPage } from './pages/PlaceholderPage';
 
 // Protected Route wrapper component
@@ -41,10 +42,7 @@ function App() {
         <Route path="/employees/:id/edit" element={<EditEmployeePage />} />
 
         {/* Placeholder routes for future phases */}
-        <Route
-          path="/departments"
-          element={<PlaceholderPage title="Departments" description="Manage organization departments." />}
-        />
+        <Route path="/departments" element={<DepartmentListPage />} />
         <Route
           path="/leave"
           element={<PlaceholderPage title="Leave Management" description="Submit and manage leave requests." />}
