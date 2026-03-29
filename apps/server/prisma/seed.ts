@@ -12,6 +12,7 @@ async function main() {
   await prisma.leaveRequest.deleteMany();
   await prisma.attendance.deleteMany();
   await prisma.employee.deleteMany();
+  await prisma.department.deleteMany();
 
   console.log('🌱 Seeding data...');
 
