@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useEffect, useMemo, useState } from 'react';
+import { API_BASE_URL } from '../api/config';
 import { useAuth } from '../contexts/AuthContext';
 import { Role } from '../types/employee';
 
@@ -28,7 +29,7 @@ export function EmployeeListPage() {
     setLoading(true);
     setError('');
     try {
-      const res = await fetch('http://localhost:3000/employees', {
+      const res = await fetch(`${API_BASE_URL}/employees`, {
         headers: {
           Authorization: token ? `Bearer ${token}` : '',
         },
@@ -52,7 +53,7 @@ export function EmployeeListPage() {
     setDeactivatingId(employeeId);
 
     try {
-      const res = await fetch(`http://localhost:3000/employees/${employeeId}`, {
+      const res = await fetch(`${API_BASE_URL}/employees/${employeeId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

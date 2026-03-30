@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { API_BASE_URL } from '../api/config';
 import { useAuth } from '../contexts/AuthContext';
 import { fetchDepartments, createDepartment } from '../api/employeeApi';
 import type { Department } from '../types/employee';
@@ -49,7 +50,7 @@ export function DepartmentListPage() {
     if (!token) return;
     setDeactivatingId(id);
     try {
-      const res = await fetch(`http://localhost:3000/departments/${id}`, {
+      const res = await fetch(`${API_BASE_URL}/departments/${id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

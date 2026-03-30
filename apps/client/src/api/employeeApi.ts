@@ -1,6 +1,7 @@
+import { API_BASE_URL } from './config';
 import type { CreateEmployeePayload, UpdateEmployeePayload, Employee, Department } from '../types/employee';
 
-const BASE_URL = 'http://localhost:3000';
+const BASE_URL = API_BASE_URL;
 
 // Using an interface + factory instead of a class to comply with erasableSyntaxOnly
 export interface ApiError extends Error {
