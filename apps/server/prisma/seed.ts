@@ -5,13 +5,15 @@ import * as bcrypt from 'bcrypt';
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('🧹 Cleaning database...');
-  // Delete in order to respect Foreign Keys
-  await prisma.auditLog.deleteMany();
-  await prisma.payroll.deleteMany();
-  await prisma.leaveRequest.deleteMany();
-  await prisma.attendance.deleteMany();
-  await prisma.employee.deleteMany();
+  // Check if admin already exists
+  const existingAdmin = await prisma.employee.findUnique({
+    where: { workEmail: 'admin@hrms.internal' }
+  });
+
+  if (existingAdmin) {
+    console.log('🌱 Database already seeded. Skipping...');
+    return;
+  }
 
   console.log('🌱 Seeding data...');
 
