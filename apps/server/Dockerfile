@@ -35,6 +35,7 @@ RUN npm config set fetch-retry-maxtimeout 1200000 && \
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+COPY prisma.config.ts ./
 
 # Expose port 3000
 EXPOSE 3000
