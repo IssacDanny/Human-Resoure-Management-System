@@ -2,6 +2,7 @@ import { useState, useEffect, type FormEvent, type ChangeEvent } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Role, mapRoleToServer, type Employee, type Department } from '../types/employee';
 import { fetchDepartments, isApiError, type ApiError } from '../api/employeeApi';
+import { API_BASE_URL } from '../api/config';
 import { FormField } from './ui/FormField';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -96,7 +97,7 @@ export function EditEmployeeForm() {
     const loadData = async () => {
       try {
         // Load employee data
-        const empRes = await fetch(`http://localhost:3000/employees/${id}`, {
+        const empRes = await fetch(`${API_BASE_URL}/employees/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -169,7 +170,7 @@ export function EditEmployeeForm() {
     };
 
     try {
-      const res = await fetch(`http://localhost:3000/employees/${id}`, {
+      const res = await fetch(`${API_BASE_URL}/employees/${id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
