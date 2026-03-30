@@ -1,17 +1,17 @@
 # --- STAGE 1: Build ---
-FROM node:20-alpine AS builder
+FROM node:20-slim AS builder
 
 WORKDIR /app
 
-# Copy package files (relative to apps/server)
+# Copy package files
 COPY package.json ./
-# If you have a lockfile in this directory, uncomment the next line:
-# COPY package-lock.json ./
 
-# Install dependencies (including dev)
-RUN npm install
+# Increase timeout and use legacy-peer-deps to solve the ERESOLVE conflict
+RUN npm config set fetch-retry-maxtimeout 1200000 && \
+    npm config set fetch-retries 10 && \
+    npm install --legacy-peer-deps
 
-# Copy source and prisma (relative to apps/server)
+# Copy source and prisma
 COPY . .
 
 # Build the app
@@ -19,14 +19,17 @@ RUN npx prisma generate
 RUN npm run build
 
 # --- STAGE 2: Production ---
-FROM node:20-alpine AS runner
+FROM node:20-slim AS runner
 
 WORKDIR /app
 
 # Copy package files
 COPY package.json ./
-# COPY package-lock.json ./
-RUN npm install --omit=dev
+
+# Increase timeout and use legacy-peer-deps here too
+RUN npm config set fetch-retry-maxtimeout 1200000 && \
+    npm config set fetch-retries 10 && \
+    npm install --omit=dev --legacy-peer-deps
 
 # Copy build artifacts and prisma
 COPY --from=builder /app/dist ./dist
