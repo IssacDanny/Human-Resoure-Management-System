@@ -128,10 +128,9 @@ jobs:
 Keep track of your progress as you go through the steps.
 
 ### 1. Database & Persistence (Supabase)
-- [ ] Create Supabase account.
-- [ ] Create `hrms-prod` project.
-- [ ] Set database password and save it securely.
-- [ ] Copy PostgreSQL Connection URI (Pooler mode).
+- [X] Create Supabase account.
+- [X] Create `hrms-prod` project.
+- [X] Set database password and save it securely.
 
 ### 2. Infrastructure & Networking (Oracle Cloud)
 - [ ] Sign up for Oracle Cloud (Always Free).
