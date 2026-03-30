@@ -15,7 +15,11 @@ async function bootstrap() {
   );
 
   // Enable CORS (Essential for your React Frontend)
-  app.enableCors();
+  app.enableCors({
+    origin: true,
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+  });
 
   await app.listen(3000);
 }
