@@ -29,12 +29,7 @@ export class PayrollController {
   @Get('payslips')
   async listPayslips(@Req() req: Request, @Query() query: any) {
     const user = req.user as any;
-    const data = await this.payrollService.getPayslips(query, user);
-
-    return {
-      data,
-      pagination: { hasNextPage: false, nextCursor: null },
-    };
+    return this.payrollService.getPayslips(query, user);
   }
 
   @Get('payroll-reports/export')

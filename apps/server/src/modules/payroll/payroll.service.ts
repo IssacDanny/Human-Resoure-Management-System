@@ -103,21 +103,42 @@ export class PayrollService {
     };
   }
 
+  /**
+   * Retrieves payslips with security scoping and availability logic.
+   */
   async getPayslips(query: any, currentUser: any) {
-    const [year, month] = query['filter[month]'].split('-');
+    const month = query.month ? Number(query.month) : new Date().getMonth() + 1;
+    const year = query.year ? Number(query.year) : new Date().getFullYear();
+
     const whereClause: any = {
-      month: Number(month),
-      year: Number(year),
+      month,
+      year,
     };
 
-    // RBAC: Employees only see their own payslips
+    // 1. SCOPING: Enforce self-access for EMPLOYEES
     if (currentUser.role === 'EMPLOYEE') {
       whereClause.employeeId = currentUser.id;
-    } else if (query['filter[employeeId]']) {
-      whereClause.employeeId = query['filter[employeeId]'];
+    } else if (query.employeeId) {
+      // Admins/Managers can specify an employeeId
+      whereClause.employeeId = Number(query.employeeId);
     }
 
-    return this.repository.findMany({ where: whereClause });
+    const records = await this.repository.findMany({ where: whereClause });
+
+    // 2. AVAILABILITY LOGIC: Handle "Not Generated Yet" state
+    if (records.length === 0) {
+      return {
+        available: false,
+        message: 'Payslip not available for this month.',
+        data: null,
+      };
+    }
+
+    // 3. BREAKDOWN: Return the full record (Prisma include: employee is handled in repo)
+    return {
+      available: true,
+      data: records[0], // Return the specific record for the period
+    };
   }
 
   /**
