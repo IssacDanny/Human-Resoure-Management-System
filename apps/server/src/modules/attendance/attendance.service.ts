@@ -54,38 +54,50 @@ export class AttendanceService {
   }
 
   /**
-   * Retrieves a list of attendance records.
+   * Retrieves a list of attendance records with security and month/year filtering.
    */
-  async getRecords(query: any) {
-    const take = query.limit ? Number(query.limit) : 25;
+  async getRecords(query: any, currentUser: any) {
+    const take = query.limit ? Number(query.limit) : 31; // Max days in a month
     const skip = query.offset ? Number(query.offset) : 0;
 
     const whereClause: any = {};
 
-    if (query['filter[employeeId]']) {
-      whereClause.employeeId = query['filter[employeeId]'];
+    // 1. SECURITY: Enforce self-access for EMPLOYEES
+    if (currentUser.role === 'EMPLOYEE') {
+      whereClause.employeeId = currentUser.id;
+    } else if (query['filter[employeeId]']) {
+      // Admins/Managers can filter by employeeId
+      whereClause.employeeId = Number(query['filter[employeeId]']);
     }
 
-    if (query['filter[month]']) {
-      // month format: YYYY-MM
-      const [year, month] = query['filter[month]'].split('-');
-      const startDate = new Date(Date.UTC(Number(year), Number(month) - 1, 1));
-      const endDate = new Date(
-        Date.UTC(Number(year), Number(month), 0, 23, 59, 59),
-      );
+    // 2. FILTERING: Month and Year
+    const month = query.month ? Number(query.month) : new Date().getMonth() + 1;
+    const year = query.year ? Number(query.year) : new Date().getFullYear();
 
-      whereClause.date = {
-        gte: startDate,
-        lte: endDate,
-      };
-    }
+    const startDate = new Date(Date.UTC(year, month - 1, 1));
+    const endDate = new Date(Date.UTC(year, month, 0, 23, 59, 59));
 
-    return this.repository.findMany({
+    whereClause.date = {
+      gte: startDate,
+      lte: endDate,
+    };
+
+    const data = await this.repository.findMany({
       take,
       skip,
       where: whereClause,
-      orderBy: { date: 'desc' },
+      orderBy: { date: 'asc' },
     });
+
+    // 3. OUTPUT: Handle empty state with specific message
+    return {
+      data,
+      message: data.length === 0 ? 'No attendance records found for this month.' : undefined,
+      pagination: {
+        hasNextPage: false,
+        nextCursor: null,
+      },
+    };
   }
 
   /**
