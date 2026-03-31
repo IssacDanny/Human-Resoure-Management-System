@@ -9,6 +9,7 @@ import { EditEmployeePage } from './pages/EditEmployeePage';
 import { EmployeeListPage } from './pages/EmployeeListPage';
 import { MyProfilePage } from './pages/MyProfilePage';
 import { DepartmentListPage } from './pages/DepartmentListPage';
+import { AttendancePage } from './pages/AttendancePage';
 import { PlaceholderPage } from './pages/PlaceholderPage';
 
 // Protected Route wrapper component
@@ -47,10 +48,7 @@ function App() {
           path="/leave"
           element={<PlaceholderPage title="Leave Management" description="Submit and manage leave requests." />}
         />
-        <Route
-          path="/attendance"
-          element={<PlaceholderPage title="Attendance" description="Track daily attendance records." />}
-        />
+        <Route path="/attendance" element={<AttendancePage />} />
         <Route
           path="/payroll"
           element={<PlaceholderPage title="Payroll" description="Generate payroll and view payslips." />}
