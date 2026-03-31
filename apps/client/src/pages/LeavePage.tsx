@@ -13,6 +13,9 @@ export function LeavePage() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
+  // Use today's date string for min constraint (YYYY-MM-DD)
+  const todayStr = new Date().toISOString().split('T')[0];
+
   const [form, setForm] = useState<CreateLeaveRequest>({
     leaveType: 'ANNUAL' as any,
     startDate: '',
@@ -37,6 +40,16 @@ export function LeavePage() {
 
   useEffect(() => { loadHistory(); }, [token]);
 
+  // QOL: Sync End Date with Start Date when Start is picked
+  const handleStartChange = (val: string) => {
+    setForm(prev => ({
+      ...prev,
+      startDate: val,
+      // Only auto-update end date if it was empty or before the new start date
+      endDate: (!prev.endDate || prev.endDate < val) ? val : prev.endDate
+    }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -44,10 +57,11 @@ export function LeavePage() {
 
     const start = new Date(form.startDate);
     const end = new Date(form.endDate);
-    const today = new Date('2026-03-31');
+    const today = new Date();
     today.setHours(0,0,0,0);
 
-    if (start < today) return setError('Start date cannot be in the past.');
+    // Backend matching validation
+    if (form.leaveType !== 'SICK' && start < today) return setError('Annual or Unpaid leave must be for future dates.');
     if (start > end) return setError('Start date cannot be after end date.');
     if (form.reason.length < 5) return setError('Reason must be at least 5 characters.');
 
@@ -91,7 +105,7 @@ export function LeavePage() {
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(300px, 1fr) 2fr', gap: '32px', alignItems: 'start' }}>
         
         {/* SUBMISSION FORM */}
-        <div className="form-card">
+        <div className="form-card" style={{ maxWidth: '100%' }}>
           <div className="form-header" style={{ marginBottom: '24px', paddingBottom: '16px' }}>
             <h2 className="form-title" style={{ fontSize: '18px' }}>New Request</h2>
           </div>
@@ -116,12 +130,27 @@ export function LeavePage() {
               </select>
             </FormField>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+            {/* QOL: Stack vertically on small boxes to prevent overflow */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <FormField id="start" label="Start Date">
-                <input type="date" className="form-input" value={form.startDate} onChange={e => setForm({...form, startDate: e.target.value})} required />
+                <input 
+                  type="date" 
+                  className="form-input" 
+                  min={form.leaveType === 'SICK' ? undefined : todayStr}
+                  value={form.startDate} 
+                  onChange={e => handleStartChange(e.target.value)} 
+                  required 
+                />
               </FormField>
               <FormField id="end" label="End Date">
-                <input type="date" className="form-input" value={form.endDate} onChange={e => setForm({...form, endDate: e.target.value})} required />
+                <input 
+                  type="date" 
+                  className="form-input" 
+                  min={form.startDate || todayStr}
+                  value={form.endDate} 
+                  onChange={e => setForm({...form, endDate: e.target.value})} 
+                  required 
+                />
               </FormField>
             </div>
 
@@ -129,7 +158,7 @@ export function LeavePage() {
               <textarea 
                 className="form-input" 
                 style={{ minHeight: '120px', resize: 'vertical' }}
-                placeholder="Brief description of why you need leave..."
+                placeholder="Brief description..."
                 value={form.reason}
                 onChange={e => setForm({...form, reason: e.target.value})}
                 required
@@ -137,12 +166,7 @@ export function LeavePage() {
             </FormField>
 
             <button type="submit" className="btn btn-primary" disabled={submitting} style={{ width: '100%', padding: '12px' }}>
-              {submitting ? (
-                <>
-                  <span className="spinner" style={{ marginRight: '10px', width: '14px', height: '14px' }} />
-                  Processing...
-                </>
-              ) : 'Submit Leave Request'}
+              {submitting ? 'Processing...' : 'Submit Request'}
             </button>
           </form>
         </div>
@@ -159,7 +183,7 @@ export function LeavePage() {
             </div>
           ) : requests.length === 0 ? (
             <div style={{ padding: '80px 40px', textAlign: 'center' }}>
-              <p style={{ color: 'var(--color-text-muted)', fontSize: '15px' }}>No requests found in your history.</p>
+              <p style={{ color: 'var(--color-text-muted)', fontSize: '15px' }}>No requests found.</p>
             </div>
           ) : (
             <div style={{ overflowX: 'auto' }}>
@@ -200,63 +224,23 @@ export function LeavePage() {
   );
 }
 
-// --- SUB-COMPONENTS ---
+// --- BADGES ---
 
 function TypeBadge({ type }: { type: string }) {
   const t = type.toUpperCase();
-  let color = '#a5b4fc'; // Annual (Indigo)
-  let bg = 'rgba(99, 102, 241, 0.12)';
-
-  if (t === 'SICK') { color = '#fb7185'; bg = 'rgba(244, 63, 94, 0.12)'; } // Rose
-  if (t === 'UNPAID') { color = '#fbbf24'; bg = 'rgba(245, 158, 11, 0.12)'; } // Amber
-
-  return (
-    <span style={{
-      fontSize: '10px', fontWeight: '700', padding: '4px 10px', borderRadius: '6px',
-      background: bg, color, border: `1px solid ${color}20`, textTransform: 'uppercase',
-      letterSpacing: '0.02em', whiteSpace: 'nowrap'
-    }}>
-      {t}
-    </span>
-  );
+  let color = '#a5b4fc'; let bg = 'rgba(99, 102, 241, 0.12)';
+  if (t === 'SICK') { color = '#fb7185'; bg = 'rgba(244, 63, 94, 0.12)'; }
+  if (t === 'UNPAID') { color = '#fbbf24'; bg = 'rgba(245, 158, 11, 0.12)'; }
+  return <span style={{ fontSize: '10px', fontWeight: '700', padding: '4px 10px', borderRadius: '6px', background: bg, color, border: `1px solid ${color}20`, textTransform: 'uppercase' }}>{t}</span>;
 }
 
 function StatusBadge({ status }: { status: string }) {
   const s = status.toUpperCase();
-  let color = 'var(--color-text-muted)';
-  let bg = 'var(--color-surface-raised)';
-
+  let color = '#94a3b8'; let bg = 'rgba(148, 163, 184, 0.12)';
   if (s === 'APPROVED') { color = 'var(--color-success)'; bg = 'var(--color-success-bg)'; }
   if (s === 'REJECTED') { color = 'var(--color-error)'; bg = 'var(--color-error-bg)'; }
-  if (s === 'PENDING') { color = '#94a3b8'; bg = 'rgba(148, 163, 184, 0.12)'; }
-
-  return (
-    <span style={{
-      fontSize: '10px', fontWeight: '800', padding: '4px 10px', borderRadius: '6px',
-      background: bg, color, border: `1px solid ${color}25`, textTransform: 'uppercase',
-      letterSpacing: '0.05em'
-    }}>
-      {s}
-    </span>
-  );
+  return <span style={{ fontSize: '10px', fontWeight: '800', padding: '4px 10px', borderRadius: '6px', background: bg, color, border: `1px solid ${color}25`, textTransform: 'uppercase' }}>{s}</span>;
 }
 
-// --- STYLES ---
-
-const tableHeaderStyle: React.CSSProperties = {
-  padding: '16px 24px',
-  textAlign: 'left',
-  fontSize: '11px',
-  fontWeight: '700',
-  textTransform: 'uppercase',
-  letterSpacing: '0.05em',
-  color: 'var(--color-text-muted)',
-  borderBottom: '1px solid var(--color-border)'
-};
-
-const tableCellStyle: React.CSSProperties = {
-  padding: '16px 24px',
-  borderBottom: '1px solid var(--color-border)',
-  fontSize: '14px',
-  verticalAlign: 'middle'
-};
+const tableHeaderStyle: React.CSSProperties = { padding: '16px 24px', textAlign: 'left', fontSize: '11px', fontWeight: '700', textTransform: 'uppercase', color: 'var(--color-text-muted)', borderBottom: '1px solid var(--color-border)' };
+const tableCellStyle: React.CSSProperties = { padding: '16px 24px', borderBottom: '1px solid var(--color-border)', fontSize: '14px', verticalAlign: 'middle' };
