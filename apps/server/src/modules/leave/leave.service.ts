@@ -18,14 +18,24 @@ export class LeaveService {
    *
    * LOGIC:
    * 1. Validate that startDate <= endDate.
-   * 2. Create the record with default status PENDING.
+   * 2. Ensure startDate is not in the past.
+   * 3. Create the record with default status PENDING and auto-assigned employeeId.
    */
   async submitRequest(employeeId: number, dto: CreateLeaveRequestDto) {
     const start = new Date(dto.startDate);
     const end = new Date(dto.endDate);
+    
+    // Use actual system date normalized to midnight
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
     if (start > end) {
       throw new BadRequestException('Start date cannot be after end date.');
+    }
+
+    // Validation: Only allow past dates if it's SICK leave (common HR policy)
+    if (start < today && dto.leaveType !== 'SICK') {
+      throw new BadRequestException('Annual or Unpaid leave must be requested for future dates.');
     }
 
     return this.repository.create({
@@ -39,7 +49,7 @@ export class LeaveService {
   }
 
   /**
-   * Retrieves a list of leave requests based on filters.
+   * Retrieves a list of leave requests based on filters and user identity.
    */
   async getRequests(query: any, currentUser: any) {
     const take = query.limit ? Number(query.limit) : 25;
@@ -47,15 +57,19 @@ export class LeaveService {
 
     const whereClause: any = {};
 
+    // 1. SCOPING: Employees can ONLY see their own history
+    if (currentUser.role === 'EMPLOYEE') {
+      whereClause.employeeId = currentUser.id;
+    } else {
+      // Admins/Managers can filter by employeeId if provided
+      if (query['filter[employeeId]']) {
+        whereClause.employeeId = Number(query['filter[employeeId]']);
+      }
+    }
+
     // Filter by status if provided
     if (query['filter[status]']) {
       whereClause.status = query['filter[status]'].toUpperCase();
-    }
-
-    // RBAC Logic: Employees only see their own. Managers see their team's.
-    // For MVP skeleton, we assume the controller passes the user context.
-    if (currentUser.role === 'EMPLOYEE') {
-      whereClause.employeeId = currentUser.id;
     }
 
     return this.repository.findMany({
