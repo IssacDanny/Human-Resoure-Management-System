@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Query, UseGuards, Req } from '@nestjs/common';
 import { AttendanceService } from './attendance.service';
 import { UpsertAttendanceDto } from './dto/upsert-attendance.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
@@ -14,17 +14,8 @@ export class AttendanceController {
   }
 
   @Get()
-  async listAttendance(@Query() query: any) {
-    // In a fully polished system, we would use a custom Interceptor
-    // to wrap this in the { data:[], pagination: {} } format.
-    // For the skeleton, we return the raw array.
-    const data = await this.attendanceService.getRecords(query);
-    return {
-      data,
-      pagination: {
-        hasNextPage: false, // Mocked for MVP
-        nextCursor: null,
-      },
-    };
+  async listAttendance(@Req() req: any, @Query() query: any) {
+    const user = req.user; // User from JwtAuthGuard
+    return this.attendanceService.getRecords(query, user);
   }
 }
