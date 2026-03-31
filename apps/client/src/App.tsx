@@ -11,6 +11,7 @@ import { MyProfilePage } from './pages/MyProfilePage';
 import { DepartmentListPage } from './pages/DepartmentListPage';
 import { AttendancePage } from './pages/AttendancePage';
 import { PayrollPage } from './pages/PayrollPage';
+import { LeavePage } from './pages/LeavePage';
 import { PlaceholderPage } from './pages/PlaceholderPage';
 
 // Protected Route wrapper component
@@ -45,10 +46,7 @@ function App() {
 
         {/* Placeholder routes for future phases */}
         <Route path="/departments" element={<DepartmentListPage />} />
-        <Route
-          path="/leave"
-          element={<PlaceholderPage title="Leave Management" description="Submit and manage leave requests." />}
-        />
+        <Route path="/leave" element={<LeavePage />} />
         <Route path="/attendance" element={<AttendancePage />} />
         <Route path="/payroll" element={<PayrollPage />} />
         <Route path="/my-profile" element={<MyProfilePage />} />
