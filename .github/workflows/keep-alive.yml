@@ -1,0 +1,19 @@
+name: Wake Up HRMS
+
+on:
+   schedule:
+     - cron: '*/13 * * * *' # Every 13 mins
+
+jobs:
+ ping-services:
+   runs-on: ubuntu-latest
+   steps:
+     - name: Poke Backend
+       # This wakes up the NestJS server
+       run: |
+         curl -I -s -o /dev/null -w "%{http_code}" https://human-resoure-management-syst.onrender.com/health
+         
+     - name: Poke Frontend
+       # This wakes up the React server (only if it's a "Web Service")
+       run: |
+         curl -I -s -o /dev/null -w "%{http_code}" https://human-resoure-management-system.onrender.com/

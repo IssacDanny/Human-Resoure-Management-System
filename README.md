@@ -42,12 +42,21 @@ Before commencing, ensure your station is equipped with the following:
     ```bash
     docker-compose up -d
     ```
-    
-4.  **Create the environment file:**
-    Navigate to the server and create the .env file with the following value.
-    ```bash
-    DATABASE_URL = postgres://admin:secretpassword@localhost:5432/hrms_local
-    ```
+
+4.  **Configure the Environment (.env):**
+    Before running the system, you **must** set up your environment variables. We have provided `.env.example` files in both the server and client directories.
+
+    *   **Server Setup:**
+        ```bash
+        cp apps/server/.env.example apps/server/.env
+        ```
+        Open `apps/server/.env` and ensure `DATABASE_URL` is correct. You should also set a `JWT_SECRET` for local authentication.
+
+    *   **Client Setup:**
+        ```bash
+        cp apps/client/.env.example apps/client/.env
+        ```
+        Open `apps/client/.env` and verify `VITE_API_URL` is set to `http://localhost:3000`.
 
 5.  **Initialize the Archivist (Prisma):**
     Navigate to the server and push the schema to the database.

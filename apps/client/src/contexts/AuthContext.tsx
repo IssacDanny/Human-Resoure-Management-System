@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, type ReactNode } from 'react';
+import { ENDPOINTS } from '../api/config';
 import { Role } from '../types/employee';
 
 // --- Auth Types ---
@@ -74,7 +75,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const isEmployee = user?.role === Role.employee;
 
   async function login(email: string, password: string) {
-    const response = await fetch('http://localhost:3000/auth/login', {
+    const response = await fetch(ENDPOINTS.LOGIN, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
