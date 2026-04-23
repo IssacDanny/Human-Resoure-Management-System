@@ -1,20 +1,24 @@
+// --- START OF FILE attendance.service.ts ---
 import { Injectable } from '@nestjs/common';
 import { AttendanceRepository } from './attendance.repository';
 import { UpsertAttendanceDto } from './dto/upsert-attendance.dto';
 import { AttendanceStatus } from '@prisma/client';
+import { PrismaService } from '../../prisma.service';
+import { hylomorphism, scopingAlgebra, scopingCoalgebra } from './attendance.fp';
 
 @Injectable()
 export class AttendanceService {
-  constructor(private readonly repository: AttendanceRepository) {}
+  constructor(
+    private readonly repository: AttendanceRepository,
+    private readonly prisma: PrismaService // Injected for the F-Algebra interpreter
+  ) {}
 
   /**
    * Records or updates daily attendance.
-   * Calculates the 'workedDays' multiplier based on the status.
    */
   async recordDailyAttendance(dto: UpsertAttendanceDto) {
     const targetDate = new Date(dto.date);
 
-    // Business Logic: Determine numerical value of the day
     let workedDays = 0;
     switch (dto.status) {
       case AttendanceStatus.PRESENT:
@@ -57,20 +61,37 @@ export class AttendanceService {
    * Retrieves a list of attendance records with security and month/year filtering.
    */
   async getRecords(query: any, currentUser: any) {
-    const take = query.limit ? Number(query.limit) : 31; // Max days in a month
+    // ========================================================================
+    // FP HYLOMORPHISM PIPELINE FOR MANAGERS
+    // ========================================================================
+    if (currentUser.role === 'MANAGER') {
+      const data = await hylomorphism(
+        scopingAlgebra(this.prisma),
+        scopingCoalgebra,
+        { _tag: 'Init', managerId: currentUser.id, query }
+      );
+
+      return {
+        data,
+        message: data.length === 0 ? 'No attendance records found for this month.' : undefined,
+        pagination: { hasNextPage: false, nextCursor: null },
+      };
+    }
+
+    // ========================================================================
+    // STANDARD IMPERATIVE PIPELINE FOR EMPLOYEES & ADMINS
+    // ========================================================================
+    const take = query.limit ? Number(query.limit) : 31;
     const skip = query.offset ? Number(query.offset) : 0;
 
     const whereClause: any = {};
 
-    // 1. SECURITY: Enforce self-access for EMPLOYEES
     if (currentUser.role === 'EMPLOYEE') {
       whereClause.employeeId = currentUser.id;
     } else if (query['filter[employeeId]']) {
-      // Admins/Managers can filter by employeeId
       whereClause.employeeId = Number(query['filter[employeeId]']);
     }
 
-    // 2. FILTERING: Month and Year
     const month = query.month ? Number(query.month) : new Date().getMonth() + 1;
     const year = query.year ? Number(query.year) : new Date().getFullYear();
 
@@ -89,7 +110,6 @@ export class AttendanceService {
       orderBy: { date: 'asc' },
     });
 
-    // 3. OUTPUT: Handle empty state with specific message
     return {
       data,
       message: data.length === 0 ? 'No attendance records found for this month.' : undefined,
@@ -102,7 +122,6 @@ export class AttendanceService {
 
   /**
    * ISP Implementation for the Payroll Module.
-   * Sums up the total worked days for a specific employee in a given month.
    */
   async getMonthlySummary(
     employeeId: number,
@@ -121,7 +140,6 @@ export class AttendanceService {
       },
     });
 
-    // Sum the workedDays (Decimal needs to be converted to Number for math)
     const totalDays = records.reduce(
       (sum, record) => sum + Number(record.workedDays),
       0,
@@ -129,3 +147,4 @@ export class AttendanceService {
     return totalDays;
   }
 }
+// --- END OF FILE attendance.service.ts ---
