@@ -49,10 +49,19 @@ export class EmployeesService {
     const take = query.limit ? Number(query.limit) : undefined;
     const skip = query.offset ? Number(query.offset) : undefined;
 
+    // Build where clause
+    const where: any = { status: 'ACTIVE' };
+    if (query.search) {
+      where.fullName = {
+        contains: query.search,
+        mode: 'insensitive',
+      };
+    }
+
     const employees = await this.repository.findAll({
       take,
       skip,
-      where: { status: 'ACTIVE' }, // Default filter
+      where,
       include: { department: true },
     });
 

@@ -33,6 +33,7 @@ export function AttendancePage() {
   const [searchLoading, setSearchLoading] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
+  const [hasFocused, setHasFocused] = useState(false);
 
   // Fetch my attendance
   useEffect(() => {
@@ -62,35 +63,53 @@ export function AttendancePage() {
     fetchAttendance();
   }, [token, month, year]);
 
-  // Search employees as user types
+  // Load 10 employees on first focus, or search when query changes
   useEffect(() => {
-    async function searchEmployees() {
-      if (!token || !searchQuery.trim()) {
-        setEmployees([]);
+    async function loadEmployees() {
+      if (!token) return;
+
+      // On first focus with empty query, load 10 employees
+      if (hasFocused && !searchQuery.trim()) {
+        setSearchLoading(true);
+        try {
+          const response = await fetch(`${API_BASE_URL}/employees?limit=10`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          if (!response.ok) throw new Error('Failed to load employees');
+          const result = await response.json();
+          setEmployees(result.data || []);
+        } catch (err) {
+          console.error('Load employees error:', err);
+          setEmployees([]);
+        } finally {
+          setSearchLoading(false);
+        }
         return;
       }
 
-      setSearchLoading(true);
-      try {
-        const response = await fetch(`${API_BASE_URL}/employees?search=${encodeURIComponent(searchQuery)}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-
-        if (!response.ok) throw new Error('Failed to search employees');
-
-        const result = await response.json();
-        setEmployees(result.data || []);
-      } catch (err) {
-        console.error('Search error:', err);
-        setEmployees([]);
-      } finally {
-        setSearchLoading(false);
+      // When query is not empty, search
+      if (searchQuery.trim()) {
+        setSearchLoading(true);
+        try {
+          const response = await fetch(`${API_BASE_URL}/employees?search=${encodeURIComponent(searchQuery)}`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          if (!response.ok) throw new Error('Failed to search employees');
+          const result = await response.json();
+          setEmployees(result.data || []);
+        } catch (err) {
+          console.error('Search error:', err);
+          setEmployees([]);
+        } finally {
+          setSearchLoading(false);
+        }
       }
     }
 
-    const debounce = setTimeout(searchEmployees, 300);
-    return () => clearTimeout(debounce);
-  }, [token, searchQuery]);
+    if (hasFocused || searchQuery.trim()) {
+      loadEmployees();
+    }
+  }, [token, searchQuery, hasFocused]);
 
   // Fetch attendance for a given employee, month, and year
   const fetchEmployeeAttendance = async (employee: Employee, m: number, y: number) => {
@@ -162,7 +181,7 @@ export function AttendancePage() {
         <p className="page-subtitle">Track your working hours and attendance records.</p>
       </header>
 
-      <div className="form-card" style={{ padding: '0', overflow: 'hidden' }}>
+      <div className="form-card" style={{ padding: '0' }}>
         {/* TAB NAVIGATION */}
         <div style={{ display: 'flex', borderBottom: '1px solid var(--color-border)' }}>
           <button
@@ -321,13 +340,16 @@ export function AttendancePage() {
                   setSearchQuery(e.target.value);
                   setShowDropdown(true);
                 }}
-                onFocus={() => setShowDropdown(true)}
+                onFocus={() => {
+                  setHasFocused(true);
+                  setShowDropdown(true);
+                }}
                 className="form-input"
                 style={{ width: '100%' }}
               />
 
               {/* Dropdown */}
-              {showDropdown && searchQuery && (
+              {showDropdown && (searchQuery || hasFocused) && (
                 <div style={{
                   position: 'absolute',
                   top: '100%',
