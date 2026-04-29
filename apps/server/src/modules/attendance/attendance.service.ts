@@ -62,24 +62,7 @@ export class AttendanceService {
    */
   async getRecords(query: any, currentUser: any) {
     // ========================================================================
-    // FP HYLOMORPHISM PIPELINE FOR MANAGERS
-    // ========================================================================
-    if (currentUser.role === 'MANAGER') {
-      const data = await hylomorphism(
-        scopingAlgebra(this.prisma),
-        scopingCoalgebra,
-        { _tag: 'Init', managerId: currentUser.id, query }
-      );
-
-      return {
-        data,
-        message: data.length === 0 ? 'No attendance records found for this month.' : undefined,
-        pagination: { hasNextPage: false, nextCursor: null },
-      };
-    }
-
-    // ========================================================================
-    // STANDARD IMPERATIVE PIPELINE FOR EMPLOYEES & ADMINS
+    // STANDARD IMPERATIVE PIPELINE FOR ALL ROLES
     // ========================================================================
     const take = query.limit ? Number(query.limit) : 31;
     const skip = query.offset ? Number(query.offset) : 0;
@@ -88,8 +71,13 @@ export class AttendanceService {
 
     if (currentUser.role === 'EMPLOYEE') {
       whereClause.employeeId = currentUser.id;
+    } else if (currentUser.role === 'MANAGER') {
+      whereClause.employeeId = currentUser.id;
     } else if (query['filter[employeeId]']) {
       whereClause.employeeId = Number(query['filter[employeeId]']);
+    } else if (currentUser.role === 'ADMIN_HR') {
+      // ADMIN defaults to viewing their own attendance
+      whereClause.employeeId = currentUser.id;
     }
 
     const month = query.month ? Number(query.month) : new Date().getMonth() + 1;
