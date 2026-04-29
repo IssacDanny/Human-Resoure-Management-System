@@ -1,20 +1,24 @@
+// --- START OF FILE attendance.service.ts ---
 import { Injectable } from '@nestjs/common';
 import { AttendanceRepository } from './attendance.repository';
 import { UpsertAttendanceDto } from './dto/upsert-attendance.dto';
 import { AttendanceStatus } from '@prisma/client';
+import { PrismaService } from '../../prisma.service';
+import { hylomorphism, scopingAlgebra, scopingCoalgebra } from './attendance.fp';
 
 @Injectable()
 export class AttendanceService {
-  constructor(private readonly repository: AttendanceRepository) {}
+  constructor(
+    private readonly repository: AttendanceRepository,
+    private readonly prisma: PrismaService // Injected for the F-Algebra interpreter
+  ) {}
 
   /**
    * Records or updates daily attendance.
-   * Calculates the 'workedDays' multiplier based on the status.
    */
   async recordDailyAttendance(dto: UpsertAttendanceDto) {
     const targetDate = new Date(dto.date);
 
-    // Business Logic: Determine numerical value of the day
     let workedDays = 0;
     switch (dto.status) {
       case AttendanceStatus.PRESENT:
@@ -102,7 +106,6 @@ export class AttendanceService {
 
   /**
    * ISP Implementation for the Payroll Module.
-   * Sums up the total worked days for a specific employee in a given month.
    */
   async getMonthlySummary(
     employeeId: number,
@@ -121,7 +124,6 @@ export class AttendanceService {
       },
     });
 
-    // Sum the workedDays (Decimal needs to be converted to Number for math)
     const totalDays = records.reduce(
       (sum, record) => sum + Number(record.workedDays),
       0,
@@ -129,3 +131,4 @@ export class AttendanceService {
     return totalDays;
   }
 }
+// --- END OF FILE attendance.service.ts ---
