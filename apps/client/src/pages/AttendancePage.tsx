@@ -498,195 +498,49 @@ export function AttendancePage() {
 // Helper Components
 function StatItem({ label, value, color }: { label: string; value: number; color: string }) {
   return (
-    <div style={{ textAlign: 'center' }}>
+    <div style={{
+      textAlign: 'center',
+      padding: '16px',
+      background: 'rgba(255,255,255,0.03)',
+      borderRadius: '10px',
+      border: '1px solid var(--color-border)'
+    }}>
       <div style={{ fontSize: '28px', fontWeight: '700', color }}>{value}</div>
-      <div style={{ fontSize: '12px', color: '#666', marginTop: '4px' }}>{label}</div>
+      <div style={{ fontSize: '12px', color: 'var(--color-text-muted)', marginTop: '4px', textTransform: 'uppercase', letterSpacing: '0.5px', fontWeight: '600' }}>{label}</div>
     </div>
   );
 }
 
 function StatusBadge({ status }: { status: string }) {
   const s = status.toUpperCase();
-  const statusColorMap: Record<string, { color: string; bg: string }> = {
-    PRESENT: { color: '#10B981', bg: '#ECFDF5' },
-    LATE: { color: '#F59E0B', bg: '#FFFBEB' },
-    ABSENT: { color: '#EF4444', bg: '#FEF2F2' },
-    HALF_DAY: { color: '#8B5CF6', bg: '#FAF5FF' },
-  };
-
-  const { color, bg } = statusColorMap[s] || { color: '#666', bg: '#F3F4F6' };
-
+  let color = '#94a3b8';
+  let bg = 'rgba(148, 163, 184, 0.12)';
+  if (s === 'PRESENT') { color = 'var(--color-success)'; bg = 'var(--color-success-bg)'; }
+  if (s === 'LATE') { color = '#fbbf24'; bg = 'rgba(245, 158, 11, 0.12)'; }
+  if (s === 'ABSENT') { color = 'var(--color-error)'; bg = 'var(--color-error-bg)'; }
+  if (s === 'HALF_DAY') { color = '#a78bfa'; bg = 'rgba(139, 92, 246, 0.12)'; }
   return (
-    <span
-      style={{
-        display: 'inline-block',
-        padding: '4px 12px',
-        borderRadius: '20px',
-        backgroundColor: bg,
-        color,
-        fontSize: '12px',
-        fontWeight: '600',
-        textTransform: 'capitalize',
-      }}
-    >
+    <span style={{ fontSize: '10px', fontWeight: '800', padding: '4px 10px', borderRadius: '6px', background: bg, color, border: `1px solid ${color}25`, textTransform: 'uppercase' }}>
       {s.replace('_', ' ')}
     </span>
   );
 }
 
-// Styles
-const pageStyle: React.CSSProperties = {
-  padding: '20px',
-  maxWidth: '1200px',
-  margin: '0 auto',
-};
-
-const tabsContainerStyle: React.CSSProperties = {
-  display: 'flex',
-  gap: '30px',
-  borderBottom: '1px solid #E5E7EB',
-  marginBottom: '20px',
-};
-
-const tabButtonStyle: React.CSSProperties = {
-  background: 'none',
-  border: 'none',
-  padding: '12px 0',
-  fontSize: '14px',
-  cursor: 'pointer',
-  borderBottom: '2px solid transparent',
-  transition: 'all 0.2s',
-};
-
-const tabContentStyle: React.CSSProperties = {
-  animation: 'fadeIn 0.2s',
-};
-
-const periodSelectorStyle: React.CSSProperties = {
-  display: 'flex',
-  gap: '15px',
-  marginBottom: '20px',
-  marginTop: '10px',
-};
-
-const selectStyle: React.CSSProperties = {
-  padding: '8px 12px',
-  border: '1px solid #E5E7EB',
-  borderRadius: '6px',
-  fontSize: '14px',
-  cursor: 'pointer',
-};
-
-const statsGridStyle: React.CSSProperties = {
-  display: 'grid',
-  gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
-  gap: '15px',
-  marginBottom: '20px',
-  padding: '15px',
-  backgroundColor: '#F9FAFB',
-  borderRadius: '8px',
-};
-
-const searchContainerStyle: React.CSSProperties = {
-  position: 'relative',
-  marginBottom: '20px',
-};
-
-const searchInputStyle: React.CSSProperties = {
-  width: '100%',
-  padding: '10px 15px',
-  border: '1px solid #E5E7EB',
-  borderRadius: '6px',
-  fontSize: '14px',
-};
-
-const dropdownStyle: React.CSSProperties = {
-  position: 'absolute',
-  top: '100%',
-  left: '0',
-  right: '0',
-  backgroundColor: 'white',
-  border: '1px solid #E5E7EB',
-  borderTop: 'none',
-  borderRadius: '0 0 6px 6px',
-  maxHeight: '300px',
-  overflowY: 'auto',
-  zIndex: 10,
-};
-
-const dropdownItemStyle: React.CSSProperties = {
-  padding: '10px 15px',
-  cursor: 'pointer',
-  borderBottom: '1px solid #E5E7EB',
-  fontSize: '14px',
-  transition: 'background 0.2s',
-};
-
-const selectedEmployeeStyle: React.CSSProperties = {
-  padding: '12px 15px',
-  backgroundColor: '#EFF6FF',
-  border: '1px solid #BFDBFE',
-  borderRadius: '6px',
-  marginBottom: '15px',
-  fontSize: '14px',
-};
-
-const tableContainerStyle: React.CSSProperties = {
-  overflowX: 'auto',
-  marginTop: '20px',
-};
-
-const tableStyle: React.CSSProperties = {
-  width: '100%',
-  borderCollapse: 'collapse',
-  backgroundColor: 'white',
-  border: '1px solid #E5E7EB',
-  borderRadius: '6px',
-};
-
 const tableHeaderStyle: React.CSSProperties = {
-  backgroundColor: '#F9FAFB',
-  padding: '12px 15px',
+  padding: '16px 24px',
   textAlign: 'left',
-  fontWeight: '600',
-  fontSize: '12px',
-  color: '#666',
-  borderBottom: '1px solid #E5E7EB',
+  fontSize: '11px',
+  fontWeight: '700',
+  textTransform: 'uppercase',
+  color: 'var(--color-text-muted)',
+  borderBottom: '1px solid var(--color-border)'
 };
 
 const tableCellStyle: React.CSSProperties = {
-  padding: '12px 15px',
-  borderBottom: '1px solid #E5E7EB',
+  padding: '16px 24px',
+  borderBottom: '1px solid var(--color-border)',
   fontSize: '14px',
-};
-
-const tableRowStyle: React.CSSProperties = {
-  transition: 'background 0.2s',
-};
-
-const errorStyle: React.CSSProperties = {
-  padding: '12px 15px',
-  backgroundColor: '#FEF2F2',
-  color: '#DC2626',
-  borderRadius: '6px',
-  marginBottom: '15px',
-  fontSize: '14px',
-};
-
-const successStyle: React.CSSProperties = {
-  padding: '12px 15px',
-  backgroundColor: '#ECFDF5',
-  color: '#10B981',
-  borderRadius: '6px',
-  marginBottom: '15px',
-  fontSize: '14px',
-};
-
-const loaderStyle: React.CSSProperties = {
-  padding: '40px',
-  textAlign: 'center',
-  color: '#999',
-  fontSize: '14px',
+  verticalAlign: 'middle'
 };
 
 function formatTime(iso: string | null | undefined): string {
