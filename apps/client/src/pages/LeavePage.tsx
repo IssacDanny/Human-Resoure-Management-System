@@ -5,7 +5,7 @@ import { type LeaveRequest, type CreateLeaveRequest } from '../types/leave';
 import { FormField } from '../components/ui/FormField';
 
 export function LeavePage() {
-  const { token, isAdmin, isManager } = useAuth();
+  const { token, isAdmin, isManager, user } = useAuth();
   
   // Tab state
   const [activeTab, setActiveTab] = useState<'my-requests' | 'manage-requests'>('my-requests');
@@ -35,10 +35,13 @@ export function LeavePage() {
   });
 
   const loadMyRequests = async () => {
-    if (!token) return;
+    if (!token || !user) return;
     setMyRequestsLoading(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/leave-requests`, {
+      // Always filter by current user's ID for "My requests"
+      const url = new URL(`${API_BASE_URL}/leave-requests`);
+      url.searchParams.append('filter[employeeId]', user.id);
+      const res = await fetch(url.toString(), {
         headers: { Authorization: `Bearer ${token}` }
       });
       const result = await res.json();
@@ -68,7 +71,7 @@ export function LeavePage() {
 
   useEffect(() => { 
     loadMyRequests();
-  }, [token]);
+  }, [token, user]);
 
   // Load all requests when tab changes to manage-requests
   useEffect(() => {
@@ -98,9 +101,9 @@ export function LeavePage() {
     today.setHours(0,0,0,0);
 
     // Backend matching validation
-    if (form.leaveType !== 'SICK' && start < today) return setError('Annual or Unpaid leave must be for future dates.');
+    if (form.leaveType !== 'sick' && start < today) return setError('Annual or Unpaid leave must be for future dates.');
     if (start > end) return setError('Start date cannot be after end date.');
-    if (form.reason.length < 5) return setError('Reason must be at least 5 characters.');
+    if (!form.reason || form.reason.length < 5) return setError('Reason must be at least 5 characters.');
 
     setIsSubmitting(true);
     try {
@@ -138,10 +141,13 @@ export function LeavePage() {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify({ status: 'approved' })
+        body: JSON.stringify({ status: 'APPROVED' })
       });
 
-      if (!res.ok) throw new Error('Failed to approve request');
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.message || 'Failed to approve request');
+      }
 
       setActionSuccess('Leave request approved successfully!');
       loadAllRequests();
@@ -165,10 +171,13 @@ export function LeavePage() {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify({ status: 'rejected', rejectionReason })
+        body: JSON.stringify({ status: 'REJECTED', rejectionReason })
       });
 
-      if (!res.ok) throw new Error('Failed to reject request');
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.message || 'Failed to reject request');
+      }
 
       setActionSuccess('Leave request rejected successfully!');
       loadAllRequests();
@@ -224,7 +233,7 @@ export function LeavePage() {
                 <input 
                   type="date" 
                   className="form-input" 
-                  min={form.leaveType === 'SICK' ? undefined : todayStr}
+                  min={form.leaveType === 'sick' ? undefined : todayStr}
                   value={form.startDate} 
                   onChange={e => handleStartChange(e.target.value)} 
                   required 
@@ -436,7 +445,7 @@ function ManageLeaveRow({
     setRejectionReason('');
   };
 
-  const isPending = request.status === 'pending';
+  const isPending = (request?.status ?? '').toUpperCase() === 'PENDING';
 
   return (
     <>
@@ -486,8 +495,8 @@ function ManageLeaveRow({
                   fontSize: '12px',
                   fontWeight: '600',
                   border: '1px solid var(--color-error)',
-                  background: 'transparent',
-                  color: 'var(--color-error)',
+                  background: 'var(--color-error)',
+                  color: 'white',
                   borderRadius: '4px',
                   cursor: 'pointer',
                   opacity: isProcessing ? 0.6 : 1,
