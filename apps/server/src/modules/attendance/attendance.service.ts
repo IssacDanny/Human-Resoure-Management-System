@@ -108,6 +108,129 @@ export class AttendanceService {
   }
 
   /**
+   * Check in for today. Creates a new attendance record for the current day.
+   * Status is PRESENT if before 9 AM, LATE if 9 AM or later.
+   */
+  async checkIn(employeeId: number) {
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    
+    // Check if already checked in today
+    const existing = await this.repository.findMany({
+      where: {
+        employeeId,
+        date: {
+          gte: today,
+          lte: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1),
+        },
+      },
+    });
+
+    if (existing.length > 0) {
+      const record = existing[0];
+      if (record.checkInTime) {
+        throw new Error('You have already checked in today.');
+      }
+    }
+
+    // Determine status based on current hour
+    const status = now.getHours() >= 9 ? AttendanceStatus.LATE : AttendanceStatus.PRESENT;
+
+    if (existing.length > 0) {
+      // Update existing record without checkInTime
+      return this.repository.upsert({
+        where: {
+          employeeId,
+          date: today,
+        },
+        create: {
+          employee: { connect: { id: employeeId } },
+          date: today,
+          status,
+          checkInTime: now,
+          workedDays: 1.0,
+        },
+        update: {
+          status,
+          checkInTime: now,
+          workedDays: 1.0,
+        },
+      });
+    }
+
+    // Create new record
+    return this.repository.upsert({
+      where: {
+        employeeId,
+        date: today,
+      },
+      create: {
+        employee: { connect: { id: employeeId } },
+        date: today,
+        status,
+        checkInTime: now,
+        workedDays: 1.0,
+      },
+      update: {
+        status,
+        checkInTime: now,
+        workedDays: 1.0,
+      },
+    });
+  }
+
+  /**
+   * Check out for today. Updates the checkOutTime of today's attendance record.
+   */
+  async checkOut(employeeId: number) {
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+    // Find today's record
+    const existing = await this.repository.findMany({
+      where: {
+        employeeId,
+        date: {
+          gte: today,
+          lte: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1),
+        },
+      },
+    });
+
+    if (existing.length === 0) {
+      throw new Error('No attendance record found for today. Please check in first.');
+    }
+
+    const record = existing[0];
+    if (!record.checkInTime) {
+      throw new Error('No check-in time found. Please check in first.');
+    }
+
+    if (record.checkOutTime) {
+      throw new Error('You have already checked out today.');
+    }
+
+    // Update with check-out time
+    return this.repository.upsert({
+      where: {
+        employeeId,
+        date: today,
+      },
+      create: {
+        employee: { connect: { id: employeeId } },
+        date: today,
+        status: record.status,
+        checkInTime: record.checkInTime,
+        checkOutTime: now,
+        workedDays: record.workedDays,
+      },
+      update: {
+        checkOutTime: now,
+      },
+    });
+  }
+
+  /**
    * ISP Implementation for the Payroll Module.
    */
   async getMonthlySummary(

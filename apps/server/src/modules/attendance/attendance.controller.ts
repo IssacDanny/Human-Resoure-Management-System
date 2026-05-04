@@ -13,6 +13,18 @@ export class AttendanceController {
     return this.attendanceService.recordDailyAttendance(upsertAttendanceDto);
   }
 
+  @Post('check-in')
+  async checkIn(@Req() req: any) {
+    const user = req.user;
+    return this.attendanceService.checkIn(user.id);
+  }
+
+  @Post('check-out')
+  async checkOut(@Req() req: any) {
+    const user = req.user;
+    return this.attendanceService.checkOut(user.id);
+  }
+
   @Get()
   async listAttendance(@Req() req: any, @Query() query: any) {
     const user = req.user; // User from JwtAuthGuard

@@ -35,6 +35,37 @@ export function AttendancePage() {
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
   const [hasFocused, setHasFocused] = useState(false);
 
+  // Check-in/out state
+  const [checking, setChecking] = useState(false);
+
+  // Find today's attendance record using local date (not UTC)
+  const localToday = new Date();
+  const todayStr = `${localToday.getFullYear()}-${String(localToday.getMonth() + 1).padStart(2, '0')}-${String(localToday.getDate()).padStart(2, '0')}`;
+
+  // Helper to extract date portion from various date formats (robust)
+  const extractDate = (dateStr: string | null | undefined): string => {
+    if (!dateStr) return '';
+    try {
+      const d = new Date(dateStr);
+      if (isNaN(d.getTime())) return '';
+      // Use UTC date to match how Prisma stores @db.Date fields
+      return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
+    } catch {
+      return '';
+    }
+  };
+
+  const todayRecord = records.find(
+    (r) => extractDate(r.date) === todayStr
+  );
+
+  // Determine button state: 'check-in' | 'check-out' | 'checked-out'
+  const buttonState = todayRecord
+    ? todayRecord.checkOutTime
+      ? 'checked-out'
+      : 'check-out'
+    : 'check-in';
+
   // Fetch my attendance
   useEffect(() => {
     async function fetchAttendance() {
@@ -62,6 +93,74 @@ export function AttendancePage() {
 
     fetchAttendance();
   }, [token, month, year]);
+
+  // Handle check in
+  const handleCheckIn = async () => {
+    if (!token || checking) return;
+    setChecking(true);
+    setError(null);
+    setMessage(null);
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/attendance/check-in`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.message || 'Check in failed');
+      }
+
+      const newRecord = await response.json();
+      setRecords((prev) => {
+        const existingIdx = prev.findIndex((r) => r.date.split('T')[0] === todayStr);
+        if (existingIdx >= 0) {
+          const updated = [...prev];
+          updated[existingIdx] = newRecord;
+          return updated;
+        }
+        return [...prev, newRecord];
+      });
+      setMessage('Checked in successfully!');
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setChecking(false);
+    }
+  };
+
+  // Handle check out
+  const handleCheckOut = async () => {
+    if (!token || checking) return;
+    setChecking(true);
+    setError(null);
+    setMessage(null);
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/attendance/check-out`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.message || 'Check out failed');
+      }
+
+      const updatedRecord = await response.json();
+      setRecords((prev) =>
+        prev.map((r) =>
+          r.date.split('T')[0] === todayStr ? updatedRecord : r
+        )
+      );
+      setMessage('Checked out successfully!');
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setChecking(false);
+    }
+  };
 
   // Load 10 employees on first focus, or search when query changes
   useEffect(() => {
@@ -270,6 +369,181 @@ export function AttendancePage() {
               <StatItem label="Absent" value={stats.absent} color="#EF4444" />
               <StatItem label="Half Day" value={stats.halfDay} color="#8B5CF6" />
             </div>
+
+            {/* Check In / Check Out Button */}
+            {!loading && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px' }}>
+                <div style={{ flex: 1 }}>
+                  <TodayInfo record={todayRecord} />
+                </div>
+                <div className="checkinout-button-wrapper" style={{ position: 'relative' }}>
+                  {buttonState === 'check-in' && (
+                    <button
+                      onClick={handleCheckIn}
+                      disabled={checking}
+                      style={{
+                        padding: '12px 32px',
+                        fontSize: '15px',
+                        fontWeight: '700',
+                        color: '#ffffff',
+                        background: 'linear-gradient(135deg, #10B981, #059669)',
+                        border: 'none',
+                        borderRadius: '10px',
+                        cursor: checking ? 'not-allowed' : 'pointer',
+                        opacity: checking ? 0.6 : 1,
+                        transition: 'all 0.2s ease',
+                        boxShadow: '0 4px 14px rgba(16, 185, 129, 0.35)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        whiteSpace: 'nowrap',
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!checking) {
+                          e.currentTarget.style.transform = 'translateY(-2px)';
+                          e.currentTarget.style.boxShadow = '0 6px 20px rgba(16, 185, 129, 0.45)';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = 'translateY(0)';
+                        e.currentTarget.style.boxShadow = '0 4px 14px rgba(16, 185, 129, 0.35)';
+                      }}
+                    >
+                      {checking ? (
+                        <>
+                          <span className="spinner" style={{ width: '16px', height: '16px', borderTopColor: '#ffffff' }} />
+                          Checking in...
+                        </>
+                      ) : (
+                        <>
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+                            <polyline points="10 17 15 12 10 7" />
+                            <line x1="15" y1="12" x2="3" y2="12" />
+                          </svg>
+                          Check In
+                        </>
+                      )}
+                    </button>
+                  )}
+                  {buttonState === 'check-out' && (
+                    <button
+                      onClick={handleCheckOut}
+                      disabled={checking}
+                      style={{
+                        padding: '12px 32px',
+                        fontSize: '15px',
+                        fontWeight: '700',
+                        color: '#ffffff',
+                        background: 'linear-gradient(135deg, #F59E0B, #D97706)',
+                        border: 'none',
+                        borderRadius: '10px',
+                        cursor: checking ? 'not-allowed' : 'pointer',
+                        opacity: checking ? 0.6 : 1,
+                        transition: 'all 0.2s ease',
+                        boxShadow: '0 4px 14px rgba(245, 158, 11, 0.35)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        whiteSpace: 'nowrap',
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!checking) {
+                          e.currentTarget.style.transform = 'translateY(-2px)';
+                          e.currentTarget.style.boxShadow = '0 6px 20px rgba(245, 158, 11, 0.45)';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = 'translateY(0)';
+                        e.currentTarget.style.boxShadow = '0 4px 14px rgba(245, 158, 11, 0.35)';
+                      }}
+                    >
+                      {checking ? (
+                        <>
+                          <span className="spinner" style={{ width: '16px', height: '16px', borderTopColor: '#ffffff' }} />
+                          Checking out...
+                        </>
+                      ) : (
+                        <>
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                            <polyline points="16 17 11 12 16 7" />
+                            <line x1="21" y1="12" x2="11" y2="12" />
+                          </svg>
+                          Check Out
+                        </>
+                      )}
+                    </button>
+                  )}
+                  {buttonState === 'checked-out' && (
+                    <div
+                      className="checkinout-tooltip-wrapper"
+                      style={{ position: 'relative', display: 'inline-block' }}
+                    >
+                      <button
+                        disabled
+                        style={{
+                          padding: '12px 32px',
+                          fontSize: '15px',
+                          fontWeight: '700',
+                          color: 'rgba(255,255,255,0.5)',
+                          background: 'rgba(255,255,255,0.08)',
+                          border: '1px solid rgba(255,255,255,0.12)',
+                          borderRadius: '10px',
+                          cursor: 'default',
+                          opacity: 0.5,
+                          pointerEvents: 'none',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                          <polyline points="16 17 11 12 16 7" />
+                          <line x1="21" y1="12" x2="11" y2="12" />
+                        </svg>
+                        Checked Out
+                      </button>
+                      <div
+                        style={{
+                          position: 'absolute',
+                          bottom: 'calc(100% + 8px)',
+                          left: '50%',
+                          transform: 'translateX(-50%)',
+                          background: 'rgba(0,0,0,0.85)',
+                          color: '#ffffff',
+                          padding: '8px 14px',
+                          borderRadius: '8px',
+                          fontSize: '13px',
+                          fontWeight: '500',
+                          whiteSpace: 'nowrap',
+                          pointerEvents: 'none',
+                          opacity: 0,
+                          transition: 'opacity 0.2s ease',
+                          zIndex: 100,
+                        }}
+                        className="checkinout-tooltip checkinout-tooltip-visible"
+                      >
+                        You have already checked out today
+                        <div
+                          style={{
+                            content: '""',
+                            position: 'absolute',
+                            top: '100%',
+                            left: '50%',
+                            transform: 'translateX(-50%)',
+                            border: '6px solid transparent',
+                            borderTopColor: 'rgba(0,0,0,0.85)',
+                          }}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
 
             {/* Status Messages */}
             {error && <div className="alert alert-error" style={{ marginBottom: '16px' }}>{error}</div>}
@@ -518,6 +792,64 @@ export function AttendancePage() {
 }
 
 // Helper Components
+function TodayInfo({ record }: { record: AttendanceRecord | undefined }) {
+  if (!record) {
+    return (
+      <div style={{
+        padding: '14px 20px',
+        background: 'rgba(59, 130, 246, 0.08)',
+        border: '1px solid rgba(59, 130, 246, 0.2)',
+        borderRadius: '10px',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '12px',
+      }}>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <div>
+          <div style={{ fontSize: '14px', fontWeight: '600', color: 'var(--color-text)' }}>
+            No attendance recorded today
+          </div>
+          <div style={{ fontSize: '12px', color: 'var(--color-text-muted)', marginTop: '2px' }}>
+            Click "Check In" to start your attendance
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{
+      padding: '14px 20px',
+      background: record.checkOutTime
+        ? 'rgba(16, 185, 129, 0.08)'
+        : 'rgba(245, 158, 11, 0.08)',
+      border: `1px solid ${record.checkOutTime ? 'rgba(16, 185, 129, 0.2)' : 'rgba(245, 158, 11, 0.2)'}`,
+      borderRadius: '10px',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '12px',
+    }}>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={record.checkOutTime ? '#10B981' : '#F59E0B'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+      </svg>
+      <div>
+        <div style={{ fontSize: '14px', fontWeight: '600', color: 'var(--color-text)' }}>
+          {record.checkOutTime
+            ? 'Attendance completed for today'
+            : `Checked in at ${formatTime(record.checkInTime)}`}
+        </div>
+        <div style={{ fontSize: '12px', color: 'var(--color-text-muted)', marginTop: '2px' }}>
+          {record.checkOutTime
+            ? `Check out at ${formatTime(record.checkOutTime)}`
+            : 'Click "Check Out" when you are done'}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function StatItem({ label, value, color }: { label: string; value: number; color: string }) {
   return (
     <div style={{

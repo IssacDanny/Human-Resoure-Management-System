@@ -1051,3 +1051,10 @@ body {
   background: rgba(99, 102, 241, 0.5);
 }
 
+/* ============================================================
+   CHECK IN / CHECK OUT TOOLTIP
+   ============================================================ */
+.checkinout-tooltip-wrapper:hover .checkinout-tooltip {
+  opacity: 1 !important;
+}
+
