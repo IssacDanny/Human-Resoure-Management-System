@@ -13,7 +13,6 @@ export class DepartmentsService {
     const departments = await this.repository.findAll({
       take,
       skip,
-      where: { isActive: true }, // Default filter to show only active departments
       orderBy: { name: 'asc' },
     });
 

@@ -49,8 +49,8 @@ export class EmployeesService {
     const take = query.limit ? Number(query.limit) : undefined;
     const skip = query.offset ? Number(query.offset) : undefined;
 
-    // Build where clause
-    const where: any = { status: 'ACTIVE' };
+    // Build where clause (return both ACTIVE and INACTIVE employees)
+    const where: any = {};
     if (query.search) {
       where.fullName = {
         contains: query.search,
