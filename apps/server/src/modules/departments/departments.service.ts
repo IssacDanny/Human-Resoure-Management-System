@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { DepartmentsRepository } from './departments.repository';
 
@@ -87,7 +87,15 @@ export class DepartmentsService {
   }
 
   async create(data: any) {
-    return this.repository.create(data);
+    try {
+      return await this.repository.create(data);
+    } catch (error: any) {
+      // Prisma unique constraint violation (duplicate name)
+      if (error.code === 'P2002' && error.meta?.target?.includes('name')) {
+        throw new ConflictException('This department already exists');
+      }
+      throw error;
+    }
   }
 
   async update(id: number, data: any) {

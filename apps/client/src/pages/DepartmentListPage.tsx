@@ -245,7 +245,7 @@ export function DepartmentListPage() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px', marginBottom: '24px' }}>
         <div className="form-card" style={{ padding: '24px', textAlign: 'center' }}>
           <div style={{ fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-text-muted)', marginBottom: '8px' }}>Total Departments</div>
-          <div style={{ fontSize: '36px', fontWeight: '800', color: 'var(--color-text)' }}>{totalCount}</div>
+          <div style={{ fontSize: '36px', fontWeight: '800', color: 'var(--color-text)' }}>{stats.total}</div>
         </div>
         <div className="form-card" style={{ padding: '24px', textAlign: 'center' }}>
           <div style={{ fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-success)', marginBottom: '8px' }}>Active</div>
