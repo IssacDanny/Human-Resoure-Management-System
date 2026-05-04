@@ -546,7 +546,7 @@ export function PayrollPage() {
               </div>
 
               {/* Financial Fields */}
-              <FormField id="genBasicSalary" label="Snapshot Basic Salary (VND) — auto-loaded from employee record">
+              <FormField id="genBasicSalary" label="Basic Salary (VND)">
                 <input type="number" className="form-input" placeholder="Auto-loaded when employee selected" value={genBasicSalary} disabled required min="0" style={{ opacity: 0.7, cursor: 'not-allowed' }} />
               </FormField>
 
