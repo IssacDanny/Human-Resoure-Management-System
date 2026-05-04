@@ -13,11 +13,13 @@ export interface PayrollRunSummary {
 }
 
 export interface Payslip {
-  id: string;
+  id: number;
   employee?: Employee;
-  month: string;
+  month: number;
+  year?: number;
   standardWorkingDays?: number;
   actualWorkedDays?: number;
+  snapshotBasicSalary?: number;
   basicSalary?: number;
   allowance?: number;
   bonus?: number;

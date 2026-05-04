@@ -45,6 +45,81 @@ export function PayrollPage() {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
   };
 
+  // Handle PDF download: open clean popup with only payslip data
+  const handleDownloadPdf = () => {
+    if (!available || !payslip) return;
+
+    const period = new Date(year, month - 1).toLocaleString('en-US', { month: 'long', year: 'numeric' });
+    const generatedAt = new Date(payslip.generatedAt || '').toLocaleDateString();
+    const stdDays = payslip.standardWorkingDays ?? '—';
+    const workedDays = Number(payslip.actualWorkedDays);
+    const basic = Number(payslip.snapshotBasicSalary);
+    const allowance = Number(payslip.allowance);
+    const bonus = Number(payslip.bonus);
+    const grossTotal = basic + allowance + bonus;
+    const deduction = Number(payslip.deduction);
+    const netSalary = Number(payslip.netSalary);
+
+    const format = (n: number) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(n);
+
+    const printWindow = window.open('', '', 'width=800,height=900');
+    if (!printWindow) return;
+
+    printWindow.document.write(`<!DOCTYPE html><html><head><title>pay_slip_${String(month).padStart(2,'0')}${year}</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font-family: 'Segoe UI', Arial, sans-serif; color: #111; padding: 40px; background: #fff; }
+      h1 { font-size: 22px; margin-bottom: 4px; }
+      .subtitle { color: #666; margin-bottom: 24px; font-size: 14px; }
+      .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #ddd; padding-bottom: 20px; margin-bottom: 24px; }
+      .net-label { font-size: 11px; font-weight: 700; color: #555; text-transform: uppercase; letter-spacing: 0.08em; }
+      .net-amount { font-size: 28px; font-weight: 800; color: #111; margin-top: 4px; }
+      table { width: 48%; border-collapse: collapse; }
+      td { padding: 8px 0; font-size: 14px; border-bottom: 1px solid #eee; }
+      td:first-child { color: #444; }
+      td:last-child { text-align: right; font-weight: 500; }
+      .side-by-side { display: flex; gap: 32px; }
+      .section-title { font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; padding-bottom: 8px; margin-bottom: 4px; }
+      .section-earnings { border-bottom: 2px solid #6366f1; color: #333; }
+      .section-deductions { border-bottom: 2px solid #ef4444; color: #c00; }
+      .total-row td { font-weight: 700; border-top: 2px solid #ccc; padding-top: 10px; color: #111; }
+      .deduction-value { color: #c00; }
+      @media print { body { padding: 20px; } }
+    </style></head><body>
+    <div class="header">
+      <div>
+        <h1>PAYSLIP #${payslip.id}</h1>
+        <p class="subtitle">Period: ${period}</p>
+      </div>
+      <div style="text-align:right">
+        <div class="net-label">Net Salary</div>
+        <div class="net-amount">${format(netSalary)}</div>
+      </div>
+    </div>
+    <div class="side-by-side">
+      <div>
+        <div class="section-title section-earnings">Earnings</div>
+        <table>
+          <tr><td>Basic Salary</td><td>${format(basic)}</td></tr>
+          <tr><td>Allowances</td><td>${format(allowance)}</td></tr>
+          <tr><td>Bonus</td><td>${format(bonus)}</td></tr>
+          <tr class="total-row"><td>Gross Total</td><td>${format(grossTotal)}</td></tr>
+        </table>
+      </div>
+      <div>
+        <div class="section-title section-deductions">Deductions</div>
+        <table>
+          <tr><td>Statutory Deductions (IT/UI)</td><td class="deduction-value">-${format(deduction)}</td></tr>
+          <tr class="total-row"><td>Total Deductions</td><td class="deduction-value">-${format(deduction)}</td></tr>
+        </table>
+      </div>
+    </div>
+    </body></html>`);
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => { printWindow.print(); }, 400);
+  };
+
   return (
     <div className="page-container">
       <header className="page-header">
@@ -74,7 +149,7 @@ export function PayrollPage() {
               </select>
             </div>
           </div>
-          <button className="btn btn-secondary" onClick={() => window.print()} disabled={!available}>
+          <button className="btn btn-secondary" onClick={handleDownloadPdf} disabled={!available}>
             Download PDF
           </button>
         </div>
@@ -96,7 +171,7 @@ export function PayrollPage() {
           {/* Header Summary */}
           <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '2px solid var(--color-border)', paddingBottom: '30px', marginBottom: '30px' }}>
             <div>
-              <h2 style={{ margin: 0, fontSize: '24px' }}>PAYSLIP #{payslip?.id.slice(-6).toUpperCase()}</h2>
+              <h2 style={{ margin: 0, fontSize: '24px' }}>PAYSLIP #{String(payslip?.id)}</h2>
               <p style={{ color: 'var(--color-text-muted)', margin: '5px 0 0' }}>Period: {new Date(year, month - 1).toLocaleString('en-US', { month: 'long', year: 'numeric' })}</p>
             </div>
             <div style={{ textAlign: 'right' }}>
