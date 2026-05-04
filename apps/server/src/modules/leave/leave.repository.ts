@@ -25,8 +25,16 @@ export class LeaveRepository {
   }): Promise<LeaveRequest[]> {
     return this.prisma.leaveRequest.findMany({
       ...params,
-      include: { employee: true }, // Include requester details
+      include: {
+        employee: {
+          include: { department: true }, // Include department for manager view
+        },
+      },
     });
+  }
+
+  async count(where?: Prisma.LeaveRequestWhereInput): Promise<number> {
+    return this.prisma.leaveRequest.count({ where });
   }
 
   async update(params: {

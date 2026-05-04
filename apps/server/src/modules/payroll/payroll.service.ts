@@ -104,6 +104,50 @@ export class PayrollService {
   }
 
   /**
+   * Creates a manual payroll entry for a specific employee.
+   * Used when HR/Manager wants to manually input payroll data.
+   */
+  async createManualPayroll(dto: any) {
+    const [yearStr, monthStr] = dto.month.split('-');
+    const year = Number(yearStr);
+    const month = Number(monthStr);
+
+    // Calculate net salary if not provided
+    const netSalary = dto.netSalary ?? (
+      (dto.snapshotBasicSalary || 0) +
+      (dto.allowance || 0) +
+      (dto.bonus || 0) -
+      (dto.deduction || 0)
+    );
+
+    return this.repository.upsert({
+      where: { employeeId: dto.employeeId, month, year },
+      create: {
+        employee: { connect: { id: dto.employeeId } },
+        month,
+        year,
+        standardWorkingDays: dto.standardWorkingDays || 22,
+        actualWorkedDays: dto.actualWorkedDays || 22,
+        snapshotBasicSalary: dto.snapshotBasicSalary || 0,
+        allowance: dto.allowance || 0,
+        bonus: dto.bonus || 0,
+        deduction: dto.deduction || 0,
+        netSalary,
+      },
+      update: {
+        standardWorkingDays: dto.standardWorkingDays || 22,
+        actualWorkedDays: dto.actualWorkedDays || 22,
+        snapshotBasicSalary: dto.snapshotBasicSalary || 0,
+        allowance: dto.allowance || 0,
+        bonus: dto.bonus || 0,
+        deduction: dto.deduction || 0,
+        netSalary,
+        generatedAt: new Date(),
+      },
+    });
+  }
+
+  /**
    * Retrieves payslips with security scoping and availability logic.
    */
   async getPayslips(query: any, currentUser: any) {

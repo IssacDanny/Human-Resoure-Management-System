@@ -33,12 +33,7 @@ export class LeaveController {
   @Get()
   async listRequests(@Req() req: Request, @Query() query: any) {
     const user = req.user as any;
-    const data = await this.leaveService.getRequests(query, user);
-
-    return {
-      data,
-      pagination: { hasNextPage: false, nextCursor: null }, // Mocked pagination wrapper
-    };
+    return this.leaveService.getRequests(query, user);
   }
 
   @Get(':id')

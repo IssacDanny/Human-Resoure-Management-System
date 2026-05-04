@@ -8,6 +8,7 @@ import {
   Req,
   Res,
   BadRequestException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { PayrollService } from './payroll.service';
 import { GeneratePayrollDto } from './dto/generate-payroll.dto';
@@ -21,9 +22,33 @@ export class PayrollController {
   constructor(private readonly payrollService: PayrollService) {}
 
   @Post('payroll-runs')
-  async generatePayroll(@Body() dto: GeneratePayrollDto) {
-    // TODO: Add @RolesGuard to ensure only ADMIN_HR can trigger this
+  async generatePayroll(@Body() dto: GeneratePayrollDto, @Req() req: Request) {
+    const user = req.user as any;
+    if (user.role !== 'ADMIN_HR' && user.role !== 'MANAGER') {
+      throw new ForbiddenException('Only HR and Managers can generate payroll');
+    }
     return this.payrollService.generatePayroll(dto);
+  }
+
+  @Post('payroll-runs/manual')
+  async createManualPayroll(@Body() body: any, @Req() req: Request) {
+    const user = req.user as any;
+    if (user.role !== 'ADMIN_HR' && user.role !== 'MANAGER') {
+      throw new ForbiddenException('Only HR and Managers can create payroll');
+    }
+    // Convert string inputs to numbers
+    const dto = {
+      ...body,
+      employeeId: Number(body.employeeId),
+      standardWorkingDays: Number(body.standardWorkingDays) || 22,
+      actualWorkedDays: Number(body.actualWorkedDays) || 22,
+      snapshotBasicSalary: Number(body.snapshotBasicSalary) || 0,
+      allowance: Number(body.allowance) || 0,
+      bonus: Number(body.bonus) || 0,
+      deduction: Number(body.deduction) || 0,
+      netSalary: Number(body.netSalary) || 0,
+    };
+    return this.payrollService.createManualPayroll(dto);
   }
 
   @Get('payslips')
