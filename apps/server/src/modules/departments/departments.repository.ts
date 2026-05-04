@@ -57,4 +57,8 @@ export class DepartmentsRepository {
   ): Promise<Department> {
     return this.prisma.department.delete({ where });
   }
+
+  async count(where?: Prisma.DepartmentWhereInput): Promise<number> {
+    return this.prisma.department.count({ where });
+  }
 }

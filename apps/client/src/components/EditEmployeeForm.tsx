@@ -1,7 +1,7 @@
 import { useState, useEffect, type FormEvent, type ChangeEvent } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Role, mapRoleToServer, type Employee, type Department } from '../types/employee';
-import { fetchDepartments, isApiError, type ApiError } from '../api/employeeApi';
+import { fetchDepartments, fetchActiveDepartments, isApiError, type ApiError } from '../api/employeeApi';
 import { API_BASE_URL } from '../api/config';
 import { FormField } from './ui/FormField';
 import { useAuth } from '../contexts/AuthContext';
@@ -107,10 +107,21 @@ export function EditEmployeeForm() {
 
         const employee: Employee = await empRes.json();
 
-        // Load departments
+        // Load active departments only
         setDeptLoading(true);
-        const depts = await fetchDepartments(token);
-        setDepartments(depts);
+        const activeDepts = await fetchActiveDepartments(token);
+
+        // Ensure employee's current department is always in the list
+        // (even if it's inactive, so the user can still see it pre-selected)
+        const currentDeptId = employee.department?.id;
+        if (currentDeptId && !activeDepts.find(d => d.id === currentDeptId)) {
+          setDepartments([
+            ...(employee.department ? [employee.department] : []),
+            ...activeDepts,
+          ]);
+        } else {
+          setDepartments(activeDepts);
+        }
         setDeptError(null);
 
         // Set form values

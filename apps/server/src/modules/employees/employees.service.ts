@@ -44,10 +44,18 @@ export class EmployeesService {
     });
   }
 
+  async getStats() {
+    const total = await this.repository.count();
+    const active = await this.repository.count({ status: 'ACTIVE' });
+    const inactive = await this.repository.count({ status: 'INACTIVE' });
+    return { total, active, inactive };
+  }
+
   async findAll(query: any) {
-    // Pagination conditionally applied; default behavior returns all active rows.
-    const take = query.limit ? Number(query.limit) : undefined;
-    const skip = query.offset ? Number(query.offset) : undefined;
+    const take = query.limit ? Math.min(Number(query.limit), 100) : 10;
+    const skip = query.offset ? Number(query.offset) : 0;
+    const sortBy = query.sortBy || 'fullName';
+    const sortOrder = query.sortOrder === 'desc' ? 'desc' : 'asc';
 
     // Build where clause (return both ACTIVE and INACTIVE employees)
     const where: any = {};
@@ -57,20 +65,49 @@ export class EmployeesService {
         mode: 'insensitive',
       };
     }
+    if (query.role) {
+      where.role = query.role;
+    }
+    if (query.status) {
+      where.status = query.status;
+    }
+    if (query.departmentId) {
+      where.departmentId = Number(query.departmentId);
+    }
+
+    // Allowed sort fields for safety (including nested department.name)
+    const allowedSortFields = ['fullName', 'workEmail', 'role', 'status', 'jobTitle', 'joinDate', 'id', 'department'];
+
+    if (!allowedSortFields.includes(sortBy)) {
+      // fallback
+    }
+
+    // Build orderBy — department needs nested sorting
+    let orderBy: any = {};
+    if (sortBy === 'department') {
+      orderBy = { department: { name: sortOrder } };
+    } else {
+      orderBy = { [sortBy]: sortOrder };
+    }
 
     const employees = await this.repository.findAll({
       take,
       skip,
       where,
+      orderBy,
       include: { department: true },
     });
 
-    // Wrap the result to match the API Contract (EmployeeConnection)
+    // Count total for pagination
+    const total = await this.repository.count(where);
+
     return {
       data: employees,
       pagination: {
-        hasNextPage: take ? employees.length === take : false,
-        nextCursor: null, // Cursor pagination not implemented
+        total,
+        page: Math.floor(skip / take) + 1,
+        limit: take,
+        totalPages: Math.ceil(total / take),
       },
     };
   }

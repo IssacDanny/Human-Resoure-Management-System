@@ -46,4 +46,8 @@ export class EmployeesRepository {
       where,
     });
   }
+
+  async count(where?: Prisma.EmployeeWhereInput): Promise<number> {
+    return this.prisma.employee.count({ where });
+  }
 }

@@ -1,6 +1,6 @@
 import { useState, useEffect, type FormEvent, type ChangeEvent } from 'react';
 import { Role, mapRoleToServer, type CreateEmployeePayload, type Employee, type Department } from '../types/employee';
-import { createEmployee, fetchDepartments, isApiError, type ApiError } from '../api/employeeApi';
+import { createEmployee, fetchActiveDepartments, isApiError, type ApiError } from '../api/employeeApi';
 import { FormField } from './ui/FormField';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -99,7 +99,7 @@ export function CreateEmployeeForm() {
     if (!token) return;
     
     setDeptLoading(true);
-    fetchDepartments(token)
+    fetchActiveDepartments(token)
       .then((depts) => {
         setDepartments(depts);
         setDeptError(null);

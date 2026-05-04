@@ -24,6 +24,12 @@ export class EmployeesController {
     return this.employeesService.registerNewEmployee(createEmployeeDto);
   }
 
+  @Get('stats')
+  @UseGuards(JwtAuthGuard)
+  getStats() {
+    return this.employeesService.getStats();
+  }
+
   @Get()
   @UseGuards(JwtAuthGuard)
   findAll(@Query() query: any) {

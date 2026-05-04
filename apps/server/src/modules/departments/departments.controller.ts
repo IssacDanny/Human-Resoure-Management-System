@@ -23,6 +23,12 @@ export class DepartmentsController {
     return this.departmentsService.create(createDepartmentDto);
   }
 
+  @Get('stats')
+  @UseGuards(JwtAuthGuard)
+  getStats() {
+    return this.departmentsService.getStats();
+  }
+
   @Get()
   @UseGuards(JwtAuthGuard)
   findAll(@Query() query: any) {

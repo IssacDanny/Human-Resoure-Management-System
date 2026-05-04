@@ -1,8 +1,9 @@
 import { Link } from 'react-router-dom';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
 import { API_BASE_URL } from '../api/config';
 import { useAuth } from '../contexts/AuthContext';
-import { Role } from '../types/employee';
+import { Role, type Department } from '../types/employee';
+import { fetchDepartments } from '../api/employeeApi';
 
 type RawEmployee = {
   id: number;
@@ -17,6 +18,9 @@ type RawEmployee = {
   jobTitle: string;
 };
 
+type SortField = 'fullName' | 'workEmail' | 'role' | 'status' | 'jobTitle' | 'joinDate' | 'department';
+type SortOrder = 'asc' | 'desc';
+
 export function EmployeeListPage() {
   const { user, token } = useAuth();
   const isBlocked = user?.role === Role.employee;
@@ -26,22 +30,76 @@ export function EmployeeListPage() {
   const [deactivatingId, setDeactivatingId] = useState<number | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
+  // Pagination state
+  const [page, setPage] = useState(1);
+  const limit = 10;
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+
+  // Filter state
+  const [filterName, setFilterName] = useState('');
+  const [filterRole, setFilterRole] = useState('');
+  const [filterDepartment, setFilterDepartment] = useState('');
+  const [filterStatus, setFilterStatus] = useState('');
+  const [departments, setDepartments] = useState<Department[]>([]);
+
+  // Fetch departments for dropdown (same API as CreateEmployeeForm)
+  useEffect(() => {
+    if (!token) return;
+    fetchDepartments(token)
+      .then(data => setDepartments(data))
+      .catch(() => setDepartments([]));
+  }, [token]);
+
+  const clearFilters = () => {
+    setFilterName('');
+    setFilterRole('');
+    setFilterDepartment('');
+    setFilterStatus('');
+  };
+
+  const hasFilters = filterName || filterRole || filterDepartment || filterStatus;
+
+  // Sort state
+  const [sortBy, setSortBy] = useState<SortField>('fullName');
+  const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
+
+  const handleSort = (field: SortField) => {
+    if (sortBy === field) {
+      setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortBy(field);
+      setSortOrder('asc');
+    }
+  };
+
   async function loadEmployees() {
+    if (!token) return;
     setLoading(true);
     setError('');
     try {
-      const res = await fetch(`${API_BASE_URL}/employees`, {
-        headers: {
-          Authorization: token ? `Bearer ${token}` : '',
-        },
+      const offset = (page - 1) * limit;
+      const url = new URL(`${API_BASE_URL}/employees`);
+      url.searchParams.set('limit', String(limit));
+      url.searchParams.set('offset', String(offset));
+      url.searchParams.set('sortBy', sortBy);
+      url.searchParams.set('sortOrder', sortOrder);
+      if (filterName.trim()) url.searchParams.set('search', filterName.trim());
+      if (filterRole) url.searchParams.set('role', filterRole);
+      if (filterDepartment) url.searchParams.set('departmentId', filterDepartment);
+      if (filterStatus) url.searchParams.set('status', filterStatus);
+
+      const res = await fetch(url.toString(), {
+        headers: { Authorization: `Bearer ${token}` },
       });
 
-      if (!res.ok) {
-        throw new Error(`Failed to fetch (${res.status})`);
-      }
+      if (!res.ok) throw new Error(`Failed to fetch (${res.status})`);
 
-      const { data } = await res.json();
-      setEmployees(Array.isArray(data) ? data : []);
+      const result = await res.json();
+      const data = Array.isArray(result.data) ? result.data : [];
+      setEmployees(data);
+      setTotalCount(result.pagination?.total ?? data.length);
+      setTotalPages(result.pagination?.totalPages ?? Math.ceil(data.length / limit));
     } catch (err) {
       setError((err as Error).message || 'Failed to load employees.');
     } finally {
@@ -52,7 +110,6 @@ export function EmployeeListPage() {
   async function deactivateEmployee(employeeId: number) {
     if (!token) return;
     setDeactivatingId(employeeId);
-
     try {
       const res = await fetch(`${API_BASE_URL}/employees/${employeeId}`, {
         method: 'PATCH',
@@ -62,11 +119,7 @@ export function EmployeeListPage() {
         },
         body: JSON.stringify({ status: 'INACTIVE' }),
       });
-
-      if (!res.ok) {
-        throw new Error(`Failed to deactivate (${res.status})`);
-      }
-
+      if (!res.ok) throw new Error(`Failed to deactivate (${res.status})`);
       setSuccess('Employee deactivated successfully!');
       setTimeout(() => setSuccess(null), 3000);
       await loadEmployees();
@@ -80,23 +133,68 @@ export function EmployeeListPage() {
   useEffect(() => {
     if (!user || isBlocked) return;
     loadEmployees();
-  }, [user, isBlocked, token]);
+  }, [user, isBlocked, token, page, sortBy, sortOrder, filterName, filterRole, filterDepartment, filterStatus]);
 
   const visibleEmployees = useMemo(() => {
-    if (!user) return [];
+    if (!user) return employees;
     if (user.role === Role.admin) return employees;
     if (user.role === Role.manager) {
       return employees.filter((emp) => emp.departmentId === user.departmentId);
     }
-    return [];
+    return employees;
   }, [user, employees]);
 
-  // Stats
-  const stats = useMemo(() => ({
-    total: visibleEmployees.length,
-    active: visibleEmployees.filter(e => e.status === 'ACTIVE').length,
-    inactive: visibleEmployees.filter(e => e.status !== 'ACTIVE').length,
-  }), [visibleEmployees]);
+  // Stats (fetched from backend for global totals)
+  const [stats, setStats] = useState({ total: 0, active: 0, inactive: 0 });
+
+  // Fetch global stats (active/inactive counts)
+  useEffect(() => {
+    if (!user || isBlocked || !token) return;
+    fetch(`${API_BASE_URL}/employees/stats`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then(r => r.json())
+      .then(data => setStats(data))
+      .catch(() => {});
+  }, [user, isBlocked, token]);
+
+  // Reset to page 1 when sort or filters change
+  useEffect(() => {
+    setPage(1);
+  }, [sortBy, filterName, filterRole, filterDepartment, filterStatus]);
+
+  // Pagination numbers
+  const getPageNumbers = () => {
+    const pages: (number | string)[] = [];
+    if (totalPages <= 7) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
+    } else {
+      pages.push(1);
+      if (page > 3) pages.push('...');
+      for (let i = Math.max(2, page - 1); i <= Math.min(totalPages - 1, page + 1); i++) {
+        pages.push(i);
+      }
+      if (page < totalPages - 2) pages.push('...');
+      pages.push(totalPages);
+    }
+    return pages;
+  };
+
+  // Sortable header helper
+  const SortHeader = ({ field, label }: { field: SortField; label: string }) => (
+    <th
+      style={{ ...tableHeaderStyle, cursor: 'pointer', userSelect: 'none', whiteSpace: 'nowrap' }}
+      onClick={() => handleSort(field)}
+    >
+      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+        {label}
+        <span style={{ display: 'inline-flex', flexDirection: 'column', lineHeight: 0.7, gap: 0, fontSize: '10px', opacity: sortBy === field ? 1 : 0.3 }}>
+          <span>▲</span>
+          <span>▼</span>
+        </span>
+      </span>
+    </th>
+  );
 
   return (
     <div className="page-container">
@@ -171,6 +269,83 @@ export function EmployeeListPage() {
               )}
             </div>
 
+            {/* Filter Bar */}
+            <div style={{ padding: '16px 24px', borderBottom: '1px solid var(--color-border)', background: 'rgba(255,255,255,0.01)' }}>
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-end', flexWrap: 'wrap' }}>
+                {/* Full Name */}
+                <div style={{ flex: '1 1 200px' }}>
+                  <label style={{ display: 'block', fontSize: '11px', fontWeight: '600', color: 'var(--color-text-muted)', marginBottom: '4px', textTransform: 'uppercase' }}>Full Name</label>
+                  <input
+                    className="form-input"
+                    type="text"
+                    placeholder="Search name..."
+                    value={filterName}
+                    onChange={e => { setFilterName(e.target.value); setPage(1); }}
+                    style={{ height: '36px', fontSize: '13px' }}
+                  />
+                </div>
+                {/* Role */}
+                <div style={{ flex: '0 1 160px' }}>
+                  <label style={{ display: 'block', fontSize: '11px', fontWeight: '600', color: 'var(--color-text-muted)', marginBottom: '4px', textTransform: 'uppercase' }}>Role</label>
+                  <select
+                    className="form-input"
+                    value={filterRole}
+                    onChange={e => { setFilterRole(e.target.value); setPage(1); }}
+                    style={{ minHeight: '36px', fontSize: '13px', padding: '6px 10px' }}
+                  >
+                    <option value="">All Roles</option>
+                    <option value="ADMIN_HR">HR</option>
+                    <option value="MANAGER">Manager</option>
+                    <option value="EMPLOYEE">Employee</option>
+                  </select>
+                </div>
+                {/* Department */}
+                <div style={{ flex: '0 1 180px' }}>
+                  <label style={{ display: 'block', fontSize: '11px', fontWeight: '600', color: 'var(--color-text-muted)', marginBottom: '4px', textTransform: 'uppercase' }}>Department</label>
+                  <select
+                    className="form-input"
+                    value={filterDepartment}
+                    onChange={e => { setFilterDepartment(e.target.value); setPage(1); }}
+                    style={{ minHeight: '36px', fontSize: '13px', padding: '6px 10px' }}
+                  >
+                    <option value="">All Departments</option>
+                    {departments.map(d => (
+                      <option key={d.id} value={d.id}>{d.name}</option>
+                    ))}
+                  </select>
+                </div>
+                {/* Status */}
+                <div style={{ flex: '0 1 140px' }}>
+                  <label style={{ display: 'block', fontSize: '11px', fontWeight: '600', color: 'var(--color-text-muted)', marginBottom: '4px', textTransform: 'uppercase' }}>Status</label>
+                  <select
+                    className="form-input"
+                    value={filterStatus}
+                    onChange={e => { setFilterStatus(e.target.value); setPage(1); }}
+                    style={{ minHeight: '36px', fontSize: '13px', padding: '6px 10px' }}
+                  >
+                    <option value="">All Status</option>
+                    <option value="ACTIVE">Active</option>
+                    <option value="INACTIVE">Inactive</option>
+                  </select>
+                </div>
+                {/* Clear Button */}
+                {hasFilters && (
+                  <button
+                    className="btn"
+                    onClick={clearFilters}
+                    style={{
+                      height: '36px', fontSize: '12px', padding: '0 14px',
+                      border: '1px solid var(--color-border)', background: 'transparent',
+                      color: 'var(--color-text-muted)', borderRadius: '6px',
+                      whiteSpace: 'nowrap'
+                    }}
+                  >
+                    ✕ Clear
+                  </button>
+                )}
+              </div>
+            </div>
+
             {/* Table Content */}
             {loading ? (
               <div style={{ padding: '80px', textAlign: 'center' }}>
@@ -186,12 +361,12 @@ export function EmployeeListPage() {
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                   <thead>
                     <tr style={{ background: 'rgba(255,255,255,0.02)' }}>
-                      <th style={tableHeaderStyle}>Full Name</th>
-                      <th style={tableHeaderStyle}>Email</th>
-                      <th style={tableHeaderStyle}>Role</th>
-                      <th style={tableHeaderStyle}>Department</th>
-                      <th style={tableHeaderStyle}>Job Title</th>
-                      <th style={tableHeaderStyle}>Status</th>
+                      <SortHeader field="fullName" label="Full Name" />
+                      <SortHeader field="workEmail" label="Email" />
+                      <SortHeader field="role" label="Role" />
+                      <SortHeader field="department" label="Department" />
+                      <SortHeader field="jobTitle" label="Job Title" />
+                      <SortHeader field="status" label="Status" />
                       {user?.role === Role.admin && <th style={{ ...tableHeaderStyle, textAlign: 'right' }}>Actions</th>}
                     </tr>
                   </thead>
@@ -255,6 +430,63 @@ export function EmployeeListPage() {
                     ))}
                   </tbody>
                 </table>
+              </div>
+            )}
+
+            {/* Pagination */}
+            {!loading && visibleEmployees.length > 0 && (
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 24px', borderTop: '1px solid var(--color-border)' }}>
+                <span style={{ fontSize: '13px', color: 'var(--color-text-muted)' }}>
+                  Showing {(page - 1) * limit + 1}–{Math.min(page * limit, visibleEmployees.length)} of {visibleEmployees.length}
+                </span>
+                <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                  <button
+                    className="btn"
+                    style={{
+                      fontSize: '12px', padding: '6px 12px', minWidth: 'auto',
+                      border: '1px solid var(--color-border)', background: 'transparent',
+                      color: page <= 1 ? 'var(--color-text-placeholder)' : 'var(--color-text)'
+                    }}
+                    disabled={page <= 1}
+                    onClick={() => setPage(p => p - 1)}
+                  >
+                    ‹
+                  </button>
+                  {getPageNumbers().map((p, i) =>
+                    typeof p === 'string' ? (
+                      <span key={`e-${i}`} style={{ padding: '6px 8px', fontSize: '12px', color: 'var(--color-text-muted)' }}>
+                        {p}
+                      </span>
+                    ) : (
+                      <button
+                        key={p}
+                        className="btn"
+                        style={{
+                          fontSize: '12px', padding: '6px 12px', minWidth: '36px',
+                          border: p === page ? '1px solid var(--color-primary)' : '1px solid var(--color-border)',
+                          background: p === page ? 'var(--color-primary)' : 'transparent',
+                          color: p === page ? '#fff' : 'var(--color-text)',
+                          borderRadius: '6px'
+                        }}
+                        onClick={() => setPage(p)}
+                      >
+                        {p}
+                      </button>
+                    )
+                  )}
+                  <button
+                    className="btn"
+                    style={{
+                      fontSize: '12px', padding: '6px 12px', minWidth: 'auto',
+                      border: '1px solid var(--color-border)', background: 'transparent',
+                      color: page >= totalPages ? 'var(--color-text-placeholder)' : 'var(--color-text)'
+                    }}
+                    disabled={page >= totalPages}
+                    onClick={() => setPage(p => p + 1)}
+                  >
+                    ›
+                  </button>
+                </div>
               </div>
             )}
           </div>

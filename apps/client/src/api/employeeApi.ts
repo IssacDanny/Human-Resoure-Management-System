@@ -120,6 +120,15 @@ export async function createDepartment(name: string, token: string): Promise<Dep
 }
 
 /**
+ * Fetches only active departments (isActive === true).
+ * Use this for Create/Edit Employee forms to prevent assigning users to inactive departments.
+ */
+export async function fetchActiveDepartments(token: string): Promise<Department[]> {
+  const all = await fetchDepartments(token);
+  return all.filter(d => d.isActive);
+}
+
+/**
  * Fetches all employees from GET /employees.
  * @throws {ApiError} for 4xx/5xx responses
  */
