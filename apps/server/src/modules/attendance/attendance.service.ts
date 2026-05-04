@@ -66,12 +66,15 @@ export class AttendanceService {
 
     const whereClause: any = {};
 
-    // 1. SECURITY: Enforce self-access for EMPLOYEES
+    // 1. SECURITY: Enforce self-access unless filtering for another user
     if (currentUser.role === 'EMPLOYEE') {
       whereClause.employeeId = currentUser.id;
     } else if (query['filter[employeeId]']) {
       // Admins/Managers can filter by employeeId
       whereClause.employeeId = Number(query['filter[employeeId]']);
+    } else {
+      // Default: ADMIN_HR and MANAGER see their own records unless filtering
+      whereClause.employeeId = currentUser.id;
     }
 
     // 2. FILTERING: Month and Year
