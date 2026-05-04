@@ -370,180 +370,197 @@ export function AttendancePage() {
               <StatItem label="Half Day" value={stats.halfDay} color="#8B5CF6" />
             </div>
 
-            {/* Check In / Check Out Button */}
-            {!loading && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px' }}>
-                <div style={{ flex: 1 }}>
-                  <TodayInfo record={todayRecord} />
-                </div>
-                <div className="checkinout-button-wrapper" style={{ position: 'relative' }}>
-                  {buttonState === 'check-in' && (
-                    <button
-                      onClick={handleCheckIn}
-                      disabled={checking}
-                      style={{
-                        padding: '12px 32px',
-                        fontSize: '15px',
-                        fontWeight: '700',
-                        color: '#ffffff',
-                        background: 'linear-gradient(135deg, #10B981, #059669)',
-                        border: 'none',
-                        borderRadius: '10px',
-                        cursor: checking ? 'not-allowed' : 'pointer',
-                        opacity: checking ? 0.6 : 1,
-                        transition: 'all 0.2s ease',
-                        boxShadow: '0 4px 14px rgba(16, 185, 129, 0.35)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px',
-                        whiteSpace: 'nowrap',
-                      }}
-                      onMouseEnter={(e) => {
-                        if (!checking) {
-                          e.currentTarget.style.transform = 'translateY(-2px)';
-                          e.currentTarget.style.boxShadow = '0 6px 20px rgba(16, 185, 129, 0.45)';
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.transform = 'translateY(0)';
+            {/* Check In / Check Out Buttons - Always Visible */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px' }}>
+              <div style={{ flex: 1 }}>
+                <TodayInfo record={todayRecord} />
+              </div>
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                {/* Check In Button */}
+                <div className="checkinout-tooltip-wrapper" style={{ position: 'relative' }}>
+                  <button
+                    onClick={handleCheckIn}
+                    disabled={loading || checking || buttonState !== 'check-in'}
+                    style={{
+                      padding: '12px 32px',
+                      fontSize: '15px',
+                      fontWeight: '700',
+                      color: buttonState === 'check-in' && !loading && !checking ? '#ffffff' : 'rgba(255,255,255,0.4)',
+                      background: buttonState === 'check-in' && !loading && !checking
+                        ? 'linear-gradient(135deg, #10B981, #059669)'
+                        : 'rgba(16, 185, 129, 0.15)',
+                      border: '1px solid',
+                      borderColor: buttonState === 'check-in' && !loading && !checking
+                        ? 'transparent'
+                        : 'rgba(16, 185, 129, 0.25)',
+                      borderRadius: '10px',
+                      cursor: buttonState === 'check-in' && !loading && !checking ? 'pointer' : 'not-allowed',
+                      opacity: buttonState === 'check-in' && !loading && !checking ? 1 : 0.5,
+                      transition: 'all 0.2s ease',
+                      boxShadow: buttonState === 'check-in' && !loading && !checking
+                        ? '0 4px 14px rgba(16, 185, 129, 0.35)'
+                        : 'none',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      whiteSpace: 'nowrap',
+                    }}
+                    onMouseEnter={(e) => {
+                      if (buttonState === 'check-in' && !loading && !checking) {
+                        e.currentTarget.style.transform = 'translateY(-2px)';
+                        e.currentTarget.style.boxShadow = '0 6px 20px rgba(16, 185, 129, 0.45)';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = 'translateY(0)';
+                      if (buttonState === 'check-in' && !loading && !checking) {
                         e.currentTarget.style.boxShadow = '0 4px 14px rgba(16, 185, 129, 0.35)';
-                      }}
-                    >
-                      {checking ? (
-                        <>
-                          <span className="spinner" style={{ width: '16px', height: '16px', borderTopColor: '#ffffff' }} />
-                          Checking in...
-                        </>
-                      ) : (
-                        <>
-                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
-                            <polyline points="10 17 15 12 10 7" />
-                            <line x1="15" y1="12" x2="3" y2="12" />
-                          </svg>
-                          Check In
-                        </>
-                      )}
-                    </button>
+                      } else {
+                        e.currentTarget.style.boxShadow = 'none';
+                      }
+                    }}
+                  >
+                    {checking && buttonState === 'check-in' ? (
+                      <>
+                        <span className="spinner" style={{ width: '16px', height: '16px', borderTopColor: '#ffffff' }} />
+                        Checking in...
+                      </>
+                    ) : (
+                      <>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+                          <polyline points="10 17 15 12 10 7" />
+                          <line x1="15" y1="12" x2="3" y2="12" />
+                        </svg>
+                        Check In
+                      </>
+                    )}
+                  </button>
+                  {/* Tooltip when disabled */}
+                  {buttonState !== 'check-in' && (
+                    <div className="checkinout-tooltip" style={{
+                      position: 'absolute',
+                      bottom: 'calc(100% + 8px)',
+                      left: '50%',
+                      transform: 'translateX(-50%)',
+                      background: 'rgba(0,0,0,0.85)',
+                      color: '#ffffff',
+                      padding: '8px 14px',
+                      borderRadius: '8px',
+                      fontSize: '13px',
+                      fontWeight: '500',
+                      whiteSpace: 'nowrap',
+                      pointerEvents: 'none',
+                      opacity: 0,
+                      transition: 'opacity 0.2s ease',
+                      zIndex: 100,
+                    }}>
+                      {buttonState === 'check-out' ? 'Already checked in today' : 'Already checked out today'}
+                      <div style={{
+                        position: 'absolute',
+                        top: '100%',
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        border: '6px solid transparent',
+                        borderTopColor: 'rgba(0,0,0,0.85)',
+                      }} />
+                    </div>
                   )}
-                  {buttonState === 'check-out' && (
-                    <button
-                      onClick={handleCheckOut}
-                      disabled={checking}
-                      style={{
-                        padding: '12px 32px',
-                        fontSize: '15px',
-                        fontWeight: '700',
-                        color: '#ffffff',
-                        background: 'linear-gradient(135deg, #F59E0B, #D97706)',
-                        border: 'none',
-                        borderRadius: '10px',
-                        cursor: checking ? 'not-allowed' : 'pointer',
-                        opacity: checking ? 0.6 : 1,
-                        transition: 'all 0.2s ease',
-                        boxShadow: '0 4px 14px rgba(245, 158, 11, 0.35)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px',
-                        whiteSpace: 'nowrap',
-                      }}
-                      onMouseEnter={(e) => {
-                        if (!checking) {
-                          e.currentTarget.style.transform = 'translateY(-2px)';
-                          e.currentTarget.style.boxShadow = '0 6px 20px rgba(245, 158, 11, 0.45)';
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.transform = 'translateY(0)';
+                </div>
+
+                {/* Check Out Button */}
+                <div className="checkinout-tooltip-wrapper" style={{ position: 'relative' }}>
+                  <button
+                    onClick={handleCheckOut}
+                    disabled={loading || checking || buttonState !== 'check-out'}
+                    style={{
+                      padding: '12px 32px',
+                      fontSize: '15px',
+                      fontWeight: '700',
+                      color: buttonState === 'check-out' && !loading && !checking ? '#ffffff' : 'rgba(255,255,255,0.4)',
+                      background: buttonState === 'check-out' && !loading && !checking
+                        ? 'linear-gradient(135deg, #F59E0B, #D97706)'
+                        : 'rgba(245, 158, 11, 0.15)',
+                      border: '1px solid',
+                      borderColor: buttonState === 'check-out' && !loading && !checking
+                        ? 'transparent'
+                        : 'rgba(245, 158, 11, 0.25)',
+                      borderRadius: '10px',
+                      cursor: buttonState === 'check-out' && !loading && !checking ? 'pointer' : 'not-allowed',
+                      opacity: buttonState === 'check-out' && !loading && !checking ? 1 : 0.5,
+                      transition: 'all 0.2s ease',
+                      boxShadow: buttonState === 'check-out' && !loading && !checking
+                        ? '0 4px 14px rgba(245, 158, 11, 0.35)'
+                        : 'none',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      whiteSpace: 'nowrap',
+                    }}
+                    onMouseEnter={(e) => {
+                      if (buttonState === 'check-out' && !loading && !checking) {
+                        e.currentTarget.style.transform = 'translateY(-2px)';
+                        e.currentTarget.style.boxShadow = '0 6px 20px rgba(245, 158, 11, 0.45)';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = 'translateY(0)';
+                      if (buttonState === 'check-out' && !loading && !checking) {
                         e.currentTarget.style.boxShadow = '0 4px 14px rgba(245, 158, 11, 0.35)';
-                      }}
-                    >
-                      {checking ? (
-                        <>
-                          <span className="spinner" style={{ width: '16px', height: '16px', borderTopColor: '#ffffff' }} />
-                          Checking out...
-                        </>
-                      ) : (
-                        <>
-                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                            <polyline points="16 17 11 12 16 7" />
-                            <line x1="21" y1="12" x2="11" y2="12" />
-                          </svg>
-                          Check Out
-                        </>
-                      )}
-                    </button>
-                  )}
-                  {buttonState === 'checked-out' && (
-                    <div
-                      className="checkinout-tooltip-wrapper"
-                      style={{ position: 'relative', display: 'inline-block' }}
-                    >
-                      <button
-                        disabled
-                        style={{
-                          padding: '12px 32px',
-                          fontSize: '15px',
-                          fontWeight: '700',
-                          color: 'rgba(255,255,255,0.5)',
-                          background: 'rgba(255,255,255,0.08)',
-                          border: '1px solid rgba(255,255,255,0.12)',
-                          borderRadius: '10px',
-                          cursor: 'default',
-                          opacity: 0.5,
-                          pointerEvents: 'none',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '8px',
-                          whiteSpace: 'nowrap',
-                        }}
-                      >
+                      } else {
+                        e.currentTarget.style.boxShadow = 'none';
+                      }
+                    }}
+                  >
+                    {checking && buttonState === 'check-out' ? (
+                      <>
+                        <span className="spinner" style={{ width: '16px', height: '16px', borderTopColor: '#ffffff' }} />
+                        Checking out...
+                      </>
+                    ) : (
+                      <>
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
                           <polyline points="16 17 11 12 16 7" />
                           <line x1="21" y1="12" x2="11" y2="12" />
                         </svg>
-                        Checked Out
-                      </button>
-                      <div
-                        style={{
-                          position: 'absolute',
-                          bottom: 'calc(100% + 8px)',
-                          left: '50%',
-                          transform: 'translateX(-50%)',
-                          background: 'rgba(0,0,0,0.85)',
-                          color: '#ffffff',
-                          padding: '8px 14px',
-                          borderRadius: '8px',
-                          fontSize: '13px',
-                          fontWeight: '500',
-                          whiteSpace: 'nowrap',
-                          pointerEvents: 'none',
-                          opacity: 0,
-                          transition: 'opacity 0.2s ease',
-                          zIndex: 100,
-                        }}
-                        className="checkinout-tooltip checkinout-tooltip-visible"
-                      >
-                        You have already checked out today
-                        <div
-                          style={{
-                            content: '""',
-                            position: 'absolute',
-                            top: '100%',
-                            left: '50%',
-                            transform: 'translateX(-50%)',
-                            border: '6px solid transparent',
-                            borderTopColor: 'rgba(0,0,0,0.85)',
-                          }}
-                        />
-                      </div>
+                        Check Out
+                      </>
+                    )}
+                  </button>
+                  {/* Tooltip when disabled */}
+                  {buttonState !== 'check-out' && (
+                    <div className="checkinout-tooltip" style={{
+                      position: 'absolute',
+                      bottom: 'calc(100% + 8px)',
+                      left: '50%',
+                      transform: 'translateX(-50%)',
+                      background: 'rgba(0,0,0,0.85)',
+                      color: '#ffffff',
+                      padding: '8px 14px',
+                      borderRadius: '8px',
+                      fontSize: '13px',
+                      fontWeight: '500',
+                      whiteSpace: 'nowrap',
+                      pointerEvents: 'none',
+                      opacity: 0,
+                      transition: 'opacity 0.2s ease',
+                      zIndex: 100,
+                    }}>
+                      {buttonState === 'check-in' ? 'Please check in first' : 'Already checked out today'}
+                      <div style={{
+                        position: 'absolute',
+                        top: '100%',
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        border: '6px solid transparent',
+                        borderTopColor: 'rgba(0,0,0,0.85)',
+                      }} />
                     </div>
                   )}
                 </div>
               </div>
-            )}
+            </div>
 
             {/* Status Messages */}
             {error && <div className="alert alert-error" style={{ marginBottom: '16px' }}>{error}</div>}
