@@ -113,16 +113,16 @@ export class AttendanceService {
    */
   async checkIn(employeeId: number) {
     const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    
+    // Create today's date using UTC directly
+    // This ensures the date stored matches the local date regardless of timezone
+    const today = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
     
     // Check if already checked in today
     const existing = await this.repository.findMany({
       where: {
         employeeId,
-        date: {
-          gte: today,
-          lte: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1),
-        },
+        date: today,
       },
     });
 
@@ -136,29 +136,7 @@ export class AttendanceService {
     // Determine status based on current hour
     const status = now.getHours() >= 9 ? AttendanceStatus.LATE : AttendanceStatus.PRESENT;
 
-    if (existing.length > 0) {
-      // Update existing record without checkInTime
-      return this.repository.upsert({
-        where: {
-          employeeId,
-          date: today,
-        },
-        create: {
-          employee: { connect: { id: employeeId } },
-          date: today,
-          status,
-          checkInTime: now,
-          workedDays: 1.0,
-        },
-        update: {
-          status,
-          checkInTime: now,
-          workedDays: 1.0,
-        },
-      });
-    }
-
-    // Create new record
+    // Create or update record with check-in time
     return this.repository.upsert({
       where: {
         employeeId,
@@ -184,16 +162,16 @@ export class AttendanceService {
    */
   async checkOut(employeeId: number) {
     const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    
+    // Create today's date using UTC directly
+    // This ensures the date matches what was stored during check-in
+    const today = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
 
     // Find today's record
     const existing = await this.repository.findMany({
       where: {
         employeeId,
-        date: {
-          gte: today,
-          lte: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1),
-        },
+        date: today,
       },
     });
 

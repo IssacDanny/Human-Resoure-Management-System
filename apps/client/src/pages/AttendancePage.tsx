@@ -38,22 +38,21 @@ export function AttendancePage() {
   // Check-in/out state
   const [checking, setChecking] = useState(false);
 
-  // Find today's attendance record using local date (not UTC)
-  const localToday = new Date();
-  const todayStr = `${localToday.getFullYear()}-${String(localToday.getMonth() + 1).padStart(2, '0')}-${String(localToday.getDate()).padStart(2, '0')}`;
-
-  // Helper to extract date portion from various date formats (robust)
+  // Helper to extract date portion from various date formats (consistent and simple)
   const extractDate = (dateStr: string | null | undefined): string => {
     if (!dateStr) return '';
     try {
-      const d = new Date(dateStr);
-      if (isNaN(d.getTime())) return '';
-      // Use UTC date to match how Prisma stores @db.Date fields
-      return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
+      // Simply extract YYYY-MM-DD from the date string
+      const match = dateStr.match(/^\d{4}-\d{2}-\d{2}/);
+      return match ? match[0] : '';
     } catch {
       return '';
     }
   };
+
+  // Find today's attendance record using consistent date extraction
+  const localToday = new Date();
+  const todayStr = `${localToday.getFullYear()}-${String(localToday.getMonth() + 1).padStart(2, '0')}-${String(localToday.getDate()).padStart(2, '0')}`;
 
   const todayRecord = records.find(
     (r) => extractDate(r.date) === todayStr
@@ -113,13 +112,17 @@ export function AttendancePage() {
       }
 
       const newRecord = await response.json();
+      
       setRecords((prev) => {
-        const existingIdx = prev.findIndex((r) => r.date.split('T')[0] === todayStr);
+        // Use consistent date extraction to find existing record
+        const existingIdx = prev.findIndex((r) => extractDate(r.date) === extractDate(newRecord.date));
         if (existingIdx >= 0) {
+          // Update existing record
           const updated = [...prev];
           updated[existingIdx] = newRecord;
           return updated;
         }
+        // Add new record if not found
         return [...prev, newRecord];
       });
       setMessage('Checked in successfully!');
@@ -151,7 +154,7 @@ export function AttendancePage() {
       const updatedRecord = await response.json();
       setRecords((prev) =>
         prev.map((r) =>
-          r.date.split('T')[0] === todayStr ? updatedRecord : r
+          extractDate(r.date) === extractDate(updatedRecord.date) ? updatedRecord : r
         )
       );
       setMessage('Checked out successfully!');
