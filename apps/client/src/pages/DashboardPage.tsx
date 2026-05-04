@@ -14,7 +14,7 @@ interface DashboardStats {
 }
 
 export function DashboardPage() {
-  const { user, token } = useAuth();
+  const { user, token, isAdmin } = useAuth();
   const [stats, setStats] = useState<DashboardStats>({
     totalEmployees: 0,
     activeEmployees: 0,
@@ -239,7 +239,7 @@ export function DashboardPage() {
               Command Center
             </div>
             <h1 className="page-title" style={{ fontSize: '28px', marginBottom: '6px' }}>
-              Welcome back, {user?.fullName?.split(' ')[0] || 'User'}
+              Welcome back, {user?.fullName || 'User'}
             </h1>
             <p className="page-subtitle" style={{ fontSize: '13px' }}>
               {currentDate} · Here's what's happening in your organization
@@ -276,14 +276,15 @@ export function DashboardPage() {
         </div>
       </header>
 
-      {/* Stat Cards */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-        gap: '16px',
-        marginBottom: '28px',
-      }}>
-        {statCards.map((card) => (
+      {/* Stat Cards (Admin/Manager only) */}
+      {isAdmin && (
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+          gap: '16px',
+          marginBottom: '28px',
+        }}>
+          {statCards.map((card) => (
           <div
             key={card.label}
             style={{
@@ -344,6 +345,7 @@ export function DashboardPage() {
           </div>
         ))}
       </div>
+      )}
 
       {/* Main Grid: Image Carousel + Quick Actions */}
       <div style={{ display: 'grid', gridTemplateColumns: '1.3fr 1fr', gap: '20px' }}>
@@ -468,8 +470,9 @@ export function DashboardPage() {
         </div>
       </div>
 
-      {/* Bottom Row: Organization Overview */}
-      <div style={{ marginTop: '20px' }}>
+      {/* Bottom Row: Organization Overview (Admin/Manager only) */}
+      {isAdmin && (
+        <div style={{ marginTop: '20px' }}>
         <div style={{
           background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(129, 140, 248, 0.06) 100%)',
           border: '1px solid rgba(99, 102, 241, 0.2)',
@@ -535,6 +538,7 @@ export function DashboardPage() {
           </div>
         </div>
       </div>
+      )}
 
       {/* Pulse animation keyframes */}
       <style>{`

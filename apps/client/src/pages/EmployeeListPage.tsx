@@ -135,14 +135,7 @@ export function EmployeeListPage() {
     loadEmployees();
   }, [user, isBlocked, token, page, sortBy, sortOrder, filterName, filterRole, filterDepartment, filterStatus]);
 
-  const visibleEmployees = useMemo(() => {
-    if (!user) return employees;
-    if (user.role === Role.admin) return employees;
-    if (user.role === Role.manager) {
-      return employees.filter((emp) => emp.departmentId === user.departmentId);
-    }
-    return employees;
-  }, [user, employees]);
+  // All roles (admin, manager) see all employees
 
   // Stats (fetched from backend for global totals)
   const [stats, setStats] = useState({ total: 0, active: 0, inactive: 0 });
@@ -351,7 +344,7 @@ export function EmployeeListPage() {
               <div style={{ padding: '80px', textAlign: 'center' }}>
                 <span className="spinner" style={{ width: '28px', height: '28px', borderTopColor: 'var(--color-primary)' }} />
               </div>
-            ) : visibleEmployees.length === 0 ? (
+            ) : employees.length === 0 ? (
               <div style={{ padding: '80px 40px', textAlign: 'center' }}>
                 <div style={{ fontSize: '48px', marginBottom: '16px' }}>👥</div>
                 <p style={{ color: 'var(--color-text-muted)', fontSize: '15px' }}>No employees found for your role/department.</p>
@@ -371,7 +364,7 @@ export function EmployeeListPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {visibleEmployees.map((emp) => (
+                    {employees.map((emp) => (
                       <tr key={emp.id} style={{ transition: 'background 0.2s' }}>
                         <td style={tableCellStyle}>
                           <span style={{ fontWeight: 600, color: 'var(--color-text)' }}>{emp.fullName}</span>
@@ -434,10 +427,10 @@ export function EmployeeListPage() {
             )}
 
             {/* Pagination */}
-            {!loading && visibleEmployees.length > 0 && (
+            {!loading && employees.length > 0 && (
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 24px', borderTop: '1px solid var(--color-border)' }}>
                 <span style={{ fontSize: '13px', color: 'var(--color-text-muted)' }}>
-                  Showing {(page - 1) * limit + 1}–{Math.min(page * limit, visibleEmployees.length)} of {visibleEmployees.length}
+                  Showing {(page - 1) * limit + 1}–{Math.min(page * limit, totalCount)} of {totalCount}
                 </span>
                 <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
                   <button
