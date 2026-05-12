@@ -1,6 +1,6 @@
 # HRMS User Guide
 
-> Human Resource Management System — Complete Step-by-Step Guide
+> Human Resource Management System — Complete Step by Step Guide
 
 ---
 
@@ -8,7 +8,7 @@
 
 1. [Getting Started](#1-getting-started)
    - [1.1 System Requirements](#11-system-requirements)
-   - [1.2 User Roles](#12-user-roles)
+   - [1.2 User Roles (Important)](#12-user-roles)
    - [1.3 Logging In](#13-logging-in)
 2. [Dashboard](#2-dashboard)
    - [2.1 Welcome Header](#21-welcome-header)
@@ -53,7 +53,7 @@
 - **Internet**: Stable connection required
 - **Screen Resolution**: Minimum 1280×720
 
-### 1.2 User Roles
+### 1.2 User Roles (Important)
 
 The system has three user roles, each with different access levels:
 
