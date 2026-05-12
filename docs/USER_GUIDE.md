@@ -69,7 +69,9 @@ The system has three user roles, each with different access levels:
 1. Open your browser and navigate to the system URL (https://human-resoure-management-system.onrender.com)
 2. You will see the login page:
 
-   <div style="background: #f6f8fa; border: 1px solid #d0d7de; border-radius: 8px; padding: 10px; display: inline-block; max-width: 100%;"><img src="screenshots/login-page.png" alt="Login Page" style="max-width: 100%; border-radius: 4px;" /></div>
+   <table><tr><td style="background:#f6f8fa;padding:10px;border-radius:8px;text-align:center">
+<img src="screenshots/login-page.png" alt="Login Page" />
+</td></tr></table>
 
 3. Enter your **Email** address assigned by your administrator
 4. Enter your **Password**
@@ -83,7 +85,9 @@ The system has three user roles, each with different access levels:
 
 The Dashboard is the default page after logging in. It provides an overview of your organization.
 
-<div style="background: #f6f8fa; border: 1px solid #d0d7de; border-radius: 8px; padding: 10px; display: inline-block; max-width: 100%;"><img src="screenshots/dashboard-overview.png" alt="Dashboard Overview" style="max-width: 100%; border-radius: 4px;" /></div>
+<table><tr><td style="background:#f6f8fa;padding:10px;border-radius:8px;text-align:center">
+<img src="screenshots/dashboard-overview.png" alt="Dashboard Overview" />
+</td></tr></table>
 
 ### 2.1 Welcome Header
 
@@ -101,7 +105,9 @@ Admin users see four stat cards at the top:
 | **Pending Leaves** | Number of leave requests awaiting approval |
 | **Present Today** | Number of employees who checked in today |
 
-<div style="background: #f6f8fa; border: 1px solid #d0d7de; border-radius: 8px; padding: 10px; display: inline-block; max-width: 100%;"><img src="screenshots/dashboard-stat-cards.png" alt="Dashboard Stat Cards" style="max-width: 100%; border-radius: 4px;" /></div>
+<table><tr><td style="background:#f6f8fa;padding:10px;border-radius:8px;text-align:center">
+<img src="screenshots/dashboard-stat-cards.png" alt="Dashboard Stat Cards" />
+</td></tr></table>
 
 > **Note**: Manager and Employee roles do not see these stat cards.
 
@@ -116,7 +122,9 @@ Four shortcut cards provide quick navigation to main sections:
 | **Attendance** | `/attendance` | View and manage daily attendance |
 | **Payroll** | `/payroll` | Generate payroll and view payslips |
 
-<div style="background: #f6f8fa; border: 1px solid #d0d7de; border-radius: 8px; padding: 10px; display: inline-block; max-width: 100%;"><img src="screenshots/dashboard-quick-actions.png" alt="Dashboard Quick Actions" style="max-width: 100%; border-radius: 4px;" /></div>
+<table><tr><td style="background:#f6f8fa;padding:10px;border-radius:8px;text-align:center">
+<img src="screenshots/dashboard-quick-actions.png" alt="Dashboard Quick Actions" />
+</td></tr></table>
 
 **To use Quick Actions:**
 1. Click the card you want to navigate to
@@ -127,14 +135,18 @@ Four shortcut cards provide quick navigation to main sections:
 - Displays motivational/inspirational images that auto-rotate every 4 seconds
 - Click the **dot indicators** below the image to manually switch slides
 
-<div style="background: #f6f8fa; border: 1px solid #d0d7de; border-radius: 8px; padding: 10px; display: inline-block; max-width: 100%;"><img src="screenshots/dashboard-carousel.png" alt="Dashboard Carousel" style="max-width: 100%; border-radius: 4px;" /></div>
+<table><tr><td style="background:#f6f8fa;padding:10px;border-radius:8px;text-align:center">
+<img src="screenshots/dashboard-carousel.png" alt="Dashboard Carousel" />
+</td></tr></table>
 
 ### 2.5 Organization at a Glance (Admin Only)
 
 - Shows total employees, departments, and active count
 - Displays an **Active Rate** ring chart (percentage of active employees)
 
-<div style="background: #f6f8fa; border: 1px solid #d0d7de; border-radius: 8px; padding: 10px; display: inline-block; max-width: 100%;"><img src="screenshots/dashboard-org-overview.png" alt="Dashboard Organization Overview" style="max-width: 100%; border-radius: 4px;" /></div>
+<table><tr><td style="background:#f6f8fa;padding:10px;border-radius:8px;text-align:center">
+<img src="screenshots/dashboard-org-overview.png" alt="Dashboard Organization Overview" />
+</td></tr></table>
 
 ---
 
@@ -150,7 +162,9 @@ Four shortcut cards provide quick navigation to main sections:
    - **Active**: Number of active employees
    - **Inactive**: Number of inactive employees
 
-<div style="background: #f6f8fa; border: 1px solid #d0d7de; border-radius: 8px; padding: 10px; display: inline-block; max-width: 100%;"><img src="screenshots/employee-list-page.png" alt="Employee List Page" style="max-width: 100%; border-radius: 4px;" /></div>
+<table><tr><td style="background:#f6f8fa;padding:10px;border-radius:8px;text-align:center">
+<img src="screenshots/employee-list-page.png" alt="Employee List Page" />
+</td></tr></table>
 
 3. Below the stats, the **All Employees** table displays all employee records
 
@@ -158,7 +172,9 @@ Four shortcut cards provide quick navigation to main sections:
 
 The filter bar above the table allows you to narrow down the employee list:
 
-<div style="background: #f6f8fa; border: 1px solid #d0d7de; border-radius: 8px; padding: 10px; display: inline-block; max-width: 100%;"><img src="screenshots/employee-filters.png" alt="Employee Filters" style="max-width: 100%; border-radius: 4px;" /></div>
+<table><tr><td style="background:#f6f8fa;padding:10px;border-radius:8px;text-align:center">
+<img src="screenshots/employee-filters.png" alt="Employee Filters" />
+</td></tr></table>
 
 | Filter | How to Use |
 |--------|-----------|
@@ -176,7 +192,9 @@ The filter bar above the table allows you to narrow down the employee list:
 
 Click any column header to sort the table:
 
-<div style="background: #f6f8fa; border: 1px solid #d0d7de; border-radius: 8px; padding: 10px; display: inline-block; max-width: 100%;"><img src="screenshots/employee-sort.png" alt="Employee Sort" style="max-width: 100%; border-radius: 4px;" /></div>
+<table><tr><td style="background:#f6f8fa;padding:10px;border-radius:8px;text-align:center">
+<img src="screenshots/employee-sort.png" alt="Employee Sort" />
+</td></tr></table>
 
 | Column | Sort Key |
 |--------|----------|
@@ -195,11 +213,15 @@ Click any column header to sort the table:
 
 1. Click the **Add Employee** button in the top-right of the table header
 
-   <div style="background: #f6f8fa; border: 1px solid #d0d7de; border-radius: 8px; padding: 10px; display: inline-block; max-width: 100%;"><img src="screenshots/add-employee-btn.png" alt="Add Employee Button" style="max-width: 100%; border-radius: 4px;" /></div>
+   <table><tr><td style="background:#f6f8fa;padding:10px;border-radius:8px;text-align:center">
+<img src="screenshots/add-employee-btn.png" alt="Add Employee Button" />
+</td></tr></table>
 
 2. The **Create Employee** form appears with the following fields:
 
-   <div style="background: #f6f8fa; border: 1px solid #d0d7de; border-radius: 8px; padding: 10px; display: inline-block; max-width: 100%;"><img src="screenshots/create-employee-form.png" alt="Create Employee Form" style="max-width: 100%; border-radius: 4px;" /></div>
+   <table><tr><td style="background:#f6f8fa;padding:10px;border-radius:8px;text-align:center">
+<img src="screenshots/create-employee-form.png" alt="Create Employee Form" />
+</td></tr></table>
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
@@ -224,7 +246,9 @@ Click any column header to sort the table:
 1. In the employee table, locate the employee you want to edit
 2. Click the **Edit** button in the **Actions** column
 
-   <div style="background: #f6f8fa; border: 1px solid #d0d7de; border-radius: 8px; padding: 10px; display: inline-block; max-width: 100%;"><img src="screenshots/edit-employee-btn.png" alt="Edit Employee Button" style="max-width: 100%; border-radius: 4px;" /></div>
+   <table><tr><td style="background:#f6f8fa;padding:10px;border-radius:8px;text-align:center">
+<img src="screenshots/edit-employee-btn.png" alt="Edit Employee Button" />
+</td></tr></table>
 
 3. Modify any field in the form
 4. Click **Save Changes** to update the record
@@ -234,7 +258,9 @@ Click any column header to sort the table:
 1. In the employee table, locate the active employee
 2. Click the **Deactivate** button in the **Actions** column
 
-   <div style="background: #f6f8fa; border: 1px solid #d0d7de; border-radius: 8px; padding: 10px; display: inline-block; max-width: 100%;"><img src="screenshots/deactivate-employee-btn.png" alt="Deactivate Employee" style="max-width: 100%; border-radius: 4px;" /></div>
+   <table><tr><td style="background:#f6f8fa;padding:10px;border-radius:8px;text-align:center">
+<img src="screenshots/deactivate-employee-btn.png" alt="Deactivate Employee" />
+</td></tr></table>
 
 3. The employee's status changes to **Inactive** immediately
 4. A success message appears: "Employee deactivated successfully!"
@@ -245,7 +271,9 @@ Click any column header to sort the table:
 
 When there are more than 10 employees, use pagination controls at the bottom of the table:
 
-<div style="background: #f6f8fa; border: 1px solid #d0d7de; border-radius: 8px; padding: 10px; display: inline-block; max-width: 100%;"><img src="screenshots/employee-pagination.png" alt="Employee Pagination" style="max-width: 100%; border-radius: 4px;" /></div>
+<table><tr><td style="background:#f6f8fa;padding:10px;border-radius:8px;text-align:center">
+<img src="screenshots/employee-pagination.png" alt="Employee Pagination" />
+</td></tr></table>
 
 - **Page numbers**: Click to jump to a specific page
 - **Ellipsis (...)**: Indicates skipped page numbers
@@ -267,7 +295,9 @@ When there are more than 10 employees, use pagination controls at the bottom of 
    - **Total Employees**: Employees assigned to departments
    - **Largest Department**: Department with most employees
 
-<div style="background: #f6f8fa; border: 1px solid #d0d7de; border-radius: 8px; padding: 10px; display: inline-block; max-width: 100%;"><img src="screenshots/department-list-page.png" alt="Department List Page" style="max-width: 100%; border-radius: 4px;" /></div>
+<table><tr><td style="background:#f6f8fa;padding:10px;border-radius:8px;text-align:center">
+<img src="screenshots/department-list-page.png" alt="Department List Page" />
+</td></tr></table>
 
 ### 4.2 Department Statistics
 
@@ -280,7 +310,9 @@ Below the stat cards, the department table displays:
 | **Workforce Ratio** | Percentage of total workforce (with progress bar) |
 | **Employees List** | Scrollable list of employee full names |
 
-<div style="background: #f6f8fa; border: 1px solid #d0d7de; border-radius: 8px; padding: 10px; display: inline-block; max-width: 100%;"><img src="screenshots/department-statistics.png" alt="Department Statistics" style="max-width: 100%; border-radius: 4px;" /></div>
+<table><tr><td style="background:#f6f8fa;padding:10px;border-radius:8px;text-align:center">
+<img src="screenshots/department-statistics.png" alt="Department Statistics" />
+</td></tr></table>
 
 > **Note**: Department management (create/edit/delete) is currently handled by the system administrator.
 
@@ -295,7 +327,9 @@ Below the stat cards, the department table displays:
 1. Click **Leave** from the sidebar or Dashboard
 2. The Leave page loads with the **Submit a Leave Request** form on the left
 
-   <div style="background: #f6f8fa; border: 1px solid #d0d7de; border-radius: 8px; padding: 10px; display: inline-block; max-width: 100%;"><img src="screenshots/leave-request-form.png" alt="Leave Request Form" style="max-width: 100%; border-radius: 4px;" /></div>
+   <table><tr><td style="background:#f6f8fa;padding:10px;border-radius:8px;text-align:center">
+<img src="screenshots/leave-request-form.png" alt="Leave Request Form" />
+</td></tr></table>
 
 3. Fill in the form:
 
@@ -320,7 +354,9 @@ Below the stat cards, the department table displays:
 
 Shows all leave requests with filtering options:
 
-<div style="background: #f6f8fa; border: 1px solid #d0d7de; border-radius: 8px; padding: 10px; display: inline-block; max-width: 100%;"><img src="screenshots/leave-requests-table.png" alt="Leave Requests Table" style="max-width: 100%; border-radius: 4px;" /></div>
+<table><tr><td style="background:#f6f8fa;padding:10px;border-radius:8px;text-align:center">
+<img src="screenshots/leave-requests-table.png" alt="Leave Requests Table" />
+</td></tr></table>
 
 | Filter | Options |
 |--------|---------|
@@ -344,14 +380,18 @@ Shows leave usage statistics for a selected month/year:
 
 Visual chart showing leave distribution across employees:
 
-<div style="background: #f6f8fa; border: 1px solid #d0d7de; border-radius: 8px; padding: 10px; display: inline-block; max-width: 100%;"><img src="screenshots/leave-analytics.png" alt="Leave Analytics" style="max-width: 100%; border-radius: 4px;" /></div>
+<table><tr><td style="background:#f6f8fa;padding:10px;border-radius:8px;text-align:center">
+<img src="screenshots/leave-analytics.png" alt="Leave Analytics" />
+</td></tr></table>
 
 ### 5.3 Approving/Rejecting Leave Requests (Admin/Manager)
 
 1. In the Leave Requests table, locate the pending request
 2. Click the **✓ (Approve)** or **✕ (Reject)** button in the **Actions** column
 
-   <div style="background: #f6f8fa; border: 1px solid #d0d7de; border-radius: 8px; padding: 10px; display: inline-block; max-width: 100%;"><img src="screenshots/leave-approve-reject.png" alt="Leave Approve Reject" style="max-width: 100%; border-radius: 4px;" /></div>
+   <table><tr><td style="background:#f6f8fa;padding:10px;border-radius:8px;text-align:center">
+<img src="screenshots/leave-approve-reject.png" alt="Leave Approve Reject" />
+</td></tr></table>
 
 3. The status updates immediately:
    - **Approved**: Employee is notified, leave is recorded
@@ -365,7 +405,9 @@ Visual chart showing leave distribution across employees:
 2. Select a **Month** and **Year** using the filter dropdowns
 3. The report updates showing leave usage for that period
 
-<div style="background: #f6f8fa; border: 1px solid #d0d7de; border-radius: 8px; padding: 10px; display: inline-block; max-width: 100%;"><img src="screenshots/leave-report.png" alt="Leave Report" style="max-width: 100%; border-radius: 4px;" /></div>
+<table><tr><td style="background:#f6f8fa;padding:10px;border-radius:8px;text-align:center">
+<img src="screenshots/leave-report.png" alt="Leave Report" />
+</td></tr></table>
 
 ### 5.5 Leave Analytics
 
@@ -386,7 +428,9 @@ Visual chart showing leave distribution across employees:
 1. Click **Attendance** from the sidebar or Dashboard
 2. The attendance page loads with Check In / Check Out buttons at the top
 
-   <div style="background: #f6f8fa; border: 1px solid #d0d7de; border-radius: 8px; padding: 10px; display: inline-block; max-width: 100%;"><img src="screenshots/attendance-checkin-out.png" alt="Attendance Check In Out" style="max-width: 100%; border-radius: 4px;" /></div>
+   <table><tr><td style="background:#f6f8fa;padding:10px;border-radius:8px;text-align:center">
+<img src="screenshots/attendance-checkin-out.png" alt="Attendance Check In Out" />
+</td></tr></table>
 
 **To Check In:**
 1. Click the **Check In** button
@@ -412,7 +456,9 @@ Visual chart showing leave distribution across employees:
   - **Date**: Select specific date
   - **Date Range**: Select start and end dates
 
-<div style="background: #f6f8fa; border: 1px solid #d0d7de; border-radius: 8px; padding: 10px; display: inline-block; max-width: 100%;"><img src="screenshots/attendance-records.png" alt="Attendance Records" style="max-width: 100%; border-radius: 4px;" /></div>
+<table><tr><td style="background:#f6f8fa;padding:10px;border-radius:8px;text-align:center">
+<img src="screenshots/attendance-records.png" alt="Attendance Records" />
+</td></tr></table>
 
 | Column | Description |
 |--------|-------------|
@@ -433,7 +479,9 @@ Visual chart showing leave distribution across employees:
 1. Click **Payroll** from the sidebar
 2. Locate the **Generate Payroll** form on the right side
 
-   <div style="background: #f6f8fa; border: 1px solid #d0d7de; border-radius: 8px; padding: 10px; display: inline-block; max-width: 100%;"><img src="screenshots/generate-payroll-form.png" alt="Generate Payroll Form" style="max-width: 100%; border-radius: 4px;" /></div>
+   <table><tr><td style="background:#f6f8fa;padding:10px;border-radius:8px;text-align:center">
+<img src="screenshots/generate-payroll-form.png" alt="Generate Payroll Form" />
+</td></tr></table>
 
 3. Fill in the form:
 
@@ -456,7 +504,9 @@ Visual chart showing leave distribution across employees:
 1. The payroll table lists all generated payroll records
 2. Filter by **Month** and **Year** using the dropdowns
 
-   <div style="background: #f6f8fa; border: 1px solid #d0d7de; border-radius: 8px; padding: 10px; display: inline-block; max-width: 100%;"><img src="screenshots/payroll-table.png" alt="Payroll Table" style="max-width: 100%; border-radius: 4px;" /></div>
+   <table><tr><td style="background:#f6f8fa;padding:10px;border-radius:8px;text-align:center">
+<img src="screenshots/payroll-table.png" alt="Payroll Table" />
+</td></tr></table>
 
 | Column | Description |
 |--------|-------------|
@@ -477,7 +527,9 @@ Visual chart showing leave distribution across employees:
 1. Click **My Profile** from the sidebar
 2. Your personal information is displayed:
 
-   <div style="background: #f6f8fa; border: 1px solid #d0d7de; border-radius: 8px; padding: 10px; display: inline-block; max-width: 100%;"><img src="screenshots/my-profile.png" alt="My Profile" style="max-width: 100%; border-radius: 4px;" /></div>
+   <table><tr><td style="background:#f6f8fa;padding:10px;border-radius:8px;text-align:center">
+<img src="screenshots/my-profile.png" alt="My Profile" />
+</td></tr></table>
 
 | Field | Description |
 |-------|-------------|
