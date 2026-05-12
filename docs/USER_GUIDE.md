@@ -63,13 +63,12 @@ The system has three user roles, each with different access levels:
 | **Manager** | Department supervisor | View all employees, view departments, approve/reject leave requests, view attendance and payroll |
 | **Employee** | Regular staff member | View own profile, submit leave requests, check in/out, view own payslips |
 
-
 ### 1.3 Logging In
 
 1. Open your browser and navigate to the system URL (https://human-resoure-management-system.onrender.com)
 2. You will see the login page:
 
-   <table><tr><td style="background:#f6f8fa;padding:10px;border-radius:8px;text-align:center">
+<table><tr><td style="background:#f6f8fa;padding:10px;border-radius:8px;text-align:center">
 <img src="screenshots/login-page.png" alt="Login Page" />
 </td></tr></table>
 
@@ -213,13 +212,13 @@ Click any column header to sort the table:
 
 1. Click the **Add Employee** button in the top-right of the table header
 
-   <table><tr><td style="background:#f6f8fa;padding:10px;border-radius:8px;text-align:center">
+<table><tr><td style="background:#f6f8fa;padding:10px;border-radius:8px;text-align:center">
 <img src="screenshots/add-employee-btn.png" alt="Add Employee Button" />
 </td></tr></table>
 
 2. The **Create Employee** form appears with the following fields:
 
-   <table><tr><td style="background:#f6f8fa;padding:10px;border-radius:8px;text-align:center">
+<table><tr><td style="background:#f6f8fa;padding:10px;border-radius:8px;text-align:center">
 <img src="screenshots/create-employee-form.png" alt="Create Employee Form" />
 </td></tr></table>
 
@@ -246,7 +245,7 @@ Click any column header to sort the table:
 1. In the employee table, locate the employee you want to edit
 2. Click the **Edit** button in the **Actions** column
 
-   <table><tr><td style="background:#f6f8fa;padding:10px;border-radius:8px;text-align:center">
+<table><tr><td style="background:#f6f8fa;padding:10px;border-radius:8px;text-align:center">
 <img src="screenshots/edit-employee-btn.png" alt="Edit Employee Button" />
 </td></tr></table>
 
@@ -258,7 +257,7 @@ Click any column header to sort the table:
 1. In the employee table, locate the active employee
 2. Click the **Deactivate** button in the **Actions** column
 
-   <table><tr><td style="background:#f6f8fa;padding:10px;border-radius:8px;text-align:center">
+<table><tr><td style="background:#f6f8fa;padding:10px;border-radius:8px;text-align:center">
 <img src="screenshots/deactivate-employee-btn.png" alt="Deactivate Employee" />
 </td></tr></table>
 
@@ -327,7 +326,7 @@ Below the stat cards, the department table displays:
 1. Click **Leave** from the sidebar or Dashboard
 2. The Leave page loads with the **Submit a Leave Request** form on the left
 
-   <table><tr><td style="background:#f6f8fa;padding:10px;border-radius:8px;text-align:center">
+<table><tr><td style="background:#f6f8fa;padding:10px;border-radius:8px;text-align:center">
 <img src="screenshots/leave-request-form.png" alt="Leave Request Form" />
 </td></tr></table>
 
@@ -389,7 +388,7 @@ Visual chart showing leave distribution across employees:
 1. In the Leave Requests table, locate the pending request
 2. Click the **✓ (Approve)** or **✕ (Reject)** button in the **Actions** column
 
-   <table><tr><td style="background:#f6f8fa;padding:10px;border-radius:8px;text-align:center">
+<table><tr><td style="background:#f6f8fa;padding:10px;border-radius:8px;text-align:center">
 <img src="screenshots/leave-approve-reject.png" alt="Leave Approve Reject" />
 </td></tr></table>
 
@@ -428,7 +427,7 @@ Visual chart showing leave distribution across employees:
 1. Click **Attendance** from the sidebar or Dashboard
 2. The attendance page loads with Check In / Check Out buttons at the top
 
-   <table><tr><td style="background:#f6f8fa;padding:10px;border-radius:8px;text-align:center">
+<table><tr><td style="background:#f6f8fa;padding:10px;border-radius:8px;text-align:center">
 <img src="screenshots/attendance-checkin-out.png" alt="Attendance Check In Out" />
 </td></tr></table>
 
@@ -479,7 +478,7 @@ Visual chart showing leave distribution across employees:
 1. Click **Payroll** from the sidebar
 2. Locate the **Generate Payroll** form on the right side
 
-   <table><tr><td style="background:#f6f8fa;padding:10px;border-radius:8px;text-align:center">
+<table><tr><td style="background:#f6f8fa;padding:10px;border-radius:8px;text-align:center">
 <img src="screenshots/generate-payroll-form.png" alt="Generate Payroll Form" />
 </td></tr></table>
 
@@ -504,7 +503,7 @@ Visual chart showing leave distribution across employees:
 1. The payroll table lists all generated payroll records
 2. Filter by **Month** and **Year** using the dropdowns
 
-   <table><tr><td style="background:#f6f8fa;padding:10px;border-radius:8px;text-align:center">
+<table><tr><td style="background:#f6f8fa;padding:10px;border-radius:8px;text-align:center">
 <img src="screenshots/payroll-table.png" alt="Payroll Table" />
 </td></tr></table>
 
@@ -527,7 +526,7 @@ Visual chart showing leave distribution across employees:
 1. Click **My Profile** from the sidebar
 2. Your personal information is displayed:
 
-   <table><tr><td style="background:#f6f8fa;padding:10px;border-radius:8px;text-align:center">
+<table><tr><td style="background:#f6f8fa;padding:10px;border-radius:8px;text-align:center">
 <img src="screenshots/my-profile.png" alt="My Profile" />
 </td></tr></table>
 
