@@ -375,12 +375,22 @@ Shows leave usage statistics for a selected month/year:
 | **Unpaid** | Number of unpaid leave days used |
 | **Total** | Total leave days used |
 
-#### Leave Analytics
+#### View detail leave request
 
-Visual chart showing leave distribution across employees:
+Shows detail of the selected leave request:
+
+| Detail | Description |
+|--------|-------------|
+| **Employee** | Employee full name |
+| **Leave type** | Type of the leave request |
+| **Period** | Start/End date of the leave request |
+| **Duration** | Total leave days used |
+| **Status** | Status of the leave request |
+| **Reason** | Reason for the leave request |
+| **Submitted at** | The submission timestamp of the leave request |
 
 <table><tr><td style="background:#f6f8fa;padding:10px;border-radius:8px;text-align:center">
-<img src="screenshots/leave-analytics.png" alt="Leave Analytics" />
+<img src="screenshots/view-detail-request.png" alt="Detail Leave Request" />
 </td></tr></table>
 
 ### 5.3 Approving/Rejecting Leave Requests (Admin/Manager)
@@ -397,24 +407,6 @@ Visual chart showing leave distribution across employees:
    - **Rejected**: Employee is notified, leave is not deducted
 
 > **Note**: Only requests with status "Pending" can be approved or rejected.
-
-### 5.4 Leave Report
-
-1. Scroll to the **Leave Report** section
-2. Select a **Month** and **Year** using the filter dropdowns
-3. The report updates showing leave usage for that period
-
-<table><tr><td style="background:#f6f8fa;padding:10px;border-radius:8px;text-align:center">
-<img src="screenshots/leave-report.png" alt="Leave Report" />
-</td></tr></table>
-
-### 5.5 Leave Analytics
-
-- The bar chart displays leave days per employee
-- Each bar is color-coded by leave type:
-  - **Green**: Annual Leave
-  - **Blue**: Sick Leave
-  - **Gray**: Unpaid Leave
 
 ---
 
@@ -461,7 +453,6 @@ Visual chart showing leave distribution across employees:
 
 | Column | Description |
 |--------|-------------|
-| **Employee** | Employee full name |
 | **Date** | Attendance date |
 | **Check In** | Check-in time |
 | **Check Out** | Check-out time (if checked out) |
@@ -489,14 +480,16 @@ Visual chart showing leave distribution across employees:
 | **Employee** | Click **Search Employee** to open the dropdown, then select an employee |
 | **Month** | Select the payroll month (e.g., January 2026) |
 | **Year** | Auto-filled based on month selection |
-| **Working Days** | Number of working days in the month (auto-calculated) |
-| **Attendance Days** | Actual days attended (auto-filled from attendance records) |
-| **Leave Days** | Approved leave days (auto-filled from leave records) |
+| **Standard Working Days** | The standard number of working days in the month |
+| **Actual Working Days** | Number of working days in the month (auto-calculated) |
 | **Basic Salary** | Auto-filled from employee's salary record (read-only) |
+| **Allowance** | Allowance for that employee |
+| **Bonus** | Bonus for that employee |
+| **Deduction** | Deduction for that employee |
 
-4. Click **Generate** to create the payroll record
+4. Click **Generate Payroll** to create the payroll record
 
-> **Note**: Basic Salary, Working Days, Attendance Days, and Leave Days are auto-populated. Only Employee and Month need manual selection.
+> **Note**: Basic Salary, Standard Working Days, Standard Working Days are auto-populated. Only Employee and Month need manual selection.
 
 ### 7.2 Viewing Payroll Records
 
@@ -509,11 +502,14 @@ Visual chart showing leave distribution across employees:
 
 | Column | Description |
 |--------|-------------|
-| **Employee** | Employee full name |
-| **Month/Year** | Payroll period |
-| **Basic Salary** | Base monthly salary |
-| **Attendance Days** | Days attended |
-| **Net Pay** | Final payable amount after deductions |
+| **Period** | Payroll period |
+| **Basic Salary** | Auto-filled from employee's salary record (read-only) |
+| **Allowance** | Allowance for that employee |
+| **Bonus** | Bonus for that employee |
+| **Deduction** | Deduction for that employee |
+| **Statutory Deduction** | Statutory deduction for that employee |
+| **Gross Total** | Final payable amount before deductions |
+| **Net Total** | Final payable amount after deductions |
 
 ---
 
@@ -534,10 +530,15 @@ Visual chart showing leave distribution across employees:
 |-------|-------------|
 | **Full Name** | Your full name |
 | **Email** | Your work email |
-| **Phone** | Your contact phone |
+| **Phone Number** | Your contact phone |
+| **Date of Birth** | Your date of birth |
+| **Address** | Your personal address |
+| **Emergency Contact Phone** | Your emergency contact number (1 and 2) |
+| **Address** | Your personal address |
 | **Department** | Your assigned department |
-| **Position** | Your job title |
-| **Role** | Your system role (Admin/Manager/Employee) |
+| **Job title** | Your job title |
+| **Join Date** | Your join date |
+| **System Role** | Your system role (Admin/Manager/Employee) |
 | **Status** | Active or Inactive |
 | **Join Date** | Your hire date |
 
